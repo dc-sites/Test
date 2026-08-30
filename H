@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>U-Tube Practical Simulator: Liquid Density</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 { margin: 0 0 5px 0; color: #0f172a; }
+        .header p { margin: 0; color: #64748b; }
+
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        input[type="range"], select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .val-display {
+            font-weight: normal;
+            color: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #1d4ed8; }
+        button.btn-danger { background: #ef4444; }
+        button.btn-danger:hover { background: #dc2626; }
+
+        canvas#simCanvas {
+            width: 100%;
+            height: 480px;
+            display: block;
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .table-container {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th { background: #f1f5f9; }
+
+        .calc-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>U-Tube Practical Simulator</h1>
+        <p>Determine the density and relative density of an unknown liquid</p>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Controls</h2>
+            
+            <div class="control-group">
+                <label for="liquidSelect">Select Test Liquid:</label>
+                <select id="liquidSelect" onchange="changeLiquid()">
+                    <option value="0.80">Kerosene (Density: 0.80 g/cm³)</option>
+                    <option value="0.92">Cooking Oil (Density: 0.92 g/cm³)</option>
+                    <option value="1.26">Glycerin (Density: 1.26 g/cm³)</option>
+                    <option value="custom">Custom Liquid</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="customDensityGroup" style="display: none;">
+                <label for="customDensity">Liquid Density ($\rho_l$): <span id="customDensityVal" class="val-display">0.85</span> g/cm³</label>
+                <input type="range" id="customDensity" min="0.5" max="2.0" step="0.05" value="0.85" oninput="updateValues()">
+            </div>
+
+            <div class="control-group">
+                <label for="liquidVol">Add Test Liquid Volume: <span id="liquidVolVal" class="val-display">10</span> cm³</label>
+                <input type="range" id="liquidVol" min="2" max="30" step="1" value="10" oninput="updateValues()">
+            </div>
+
+            <button onclick="recordData()">Record Data Point</button>
+            <button class="btn-danger" onclick="resetSim()">Reset Experiment</button>
+
+            <div class="calc-box">
+                <strong>Current Readings:</strong><br>
+                Liquid Height ($h_l$): <span id="hlRead">-</span> cm<br>
+                Water Height ($h_w$): <span id="hwRead">-</span> cm<br>
+                Calculated RD ($h_w / h_l$): <span id="rdRead">-</span>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h2>Apparatus Visualization</h2>
+            <canvas id="simCanvas"></canvas>
+        </div>
+
+        <div class="card">
+            <h2>Graph & Data Log</h2>
+            <div style="height: 220px; position: relative;">
+                <canvas id="graphCanvas"></canvas>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trial</th>
+                            <th>$h_l$ (cm)</th>
+                            <th>$h_w$ (cm)</th>
+                            <th>Ratio ($h_w/h_l$)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Dynamic sizing for crisp rendering
+        canvas.width = 400;
+        canvas.height = 480;
+
+        let densityL = 0.80; // Density of test liquid relative to water (1.0)
+        let dataset = [];
+        let chart;
+
+        // Tube Parameters
+        const tubeWidth = 24;
+        const tubeLeftX = 140;
+        const tubeRightX = 230;
+        const tubeBottomY = 400;
+        const tubeTopY = 60;
+        const waterBaseVol = 80; // Base water pixel height in tube
+
+        function initChart() {
+            const ctxGraph = document.getElementById('graphCanvas').getContext('2d');
+            chart = new Chart(ctxGraph, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Data Points (h_w vs h_l)',
+                        data: [],
+                        backgroundColor: '#2563eb'
+                    }, {
+                        label: 'Best Fit Line',
+                        data: [],
+                        type: 'line',
+                        borderColor: '#ef4444',
+                        borderWidth: 1.5,
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { type: 'linear', position: 'bottom', title: { display: true, text: 'h_l (cm)' }, min: 0 },
+                        y: { title: { display: true, text: 'h_w (cm)' }, min: 0 }
+                    }
+                }
+            });
+        }
+
+        function changeLiquid() {
+            const select = document.getElementById('liquidSelect');
+            const customGroup = document.getElementById('customDensityGroup');
+            if (select.value === 'custom') {
+                customGroup.style.display = 'block';
+                densityL = parseFloat(document.getElementById('customDensity').value);
+            } else {
+                customGroup.style.display = 'none';
+                densityL = parseFloat(select.value);
+            }
+            updateValues();
+        }
+
+        function updateValues() {
+            if (document.getElementById('liquidSelect').value === 'custom') {
+                densityL = parseFloat(document.getElementById('customDensity').value);
+                document.getElementById('customDensityVal').innerText = densityL.toFixed(2);
+            }
+            
+            const hl = parseFloat(document.getElementById('liquidVol').value);
+            document.getElementById('liquidVolVal').innerText = hl;
+
+            // Physics calculation: hw * rho_w = hl * rho_l (rho_w = 1.0)
+            const hw = hl * densityL;
+
+            document.getElementById('hlRead').innerText = hl.toFixed(1);
+            document.getElementById('hwRead').innerText = hw.toFixed(1);
+            document.getElementById('rdRead').innerText = (hw / hl).toFixed(2);
+
+            drawApparatus(hl, hw);
+        }
+
+        function drawApparatus(hl, hw) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Scale factor (pixels per cm)
+            const scale = 8;
+
+            const hlPx = hl * scale;
+            const hwPx = hw * scale;
+
+            // Calculate liquid displacement
+            // Level z pushes down on the right side and up on the left
+            const deltaY = (hlPx * densityL) / 2;
+
+            const waterLeftTop = tubeBottomY - waterBaseVol - deltaY;
+            const waterRightTop = tubeBottomY - waterBaseVol + deltaY;
+            const liquidRightTop = waterRightTop - hlPx;
+
+            // Draw Ruler (Left Side)
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.fillStyle = '#475569';
+            ctx.font = '10px monospace';
+            ctx.lineWidth = 1;
+            
+            for (let y = tubeTopY; y <= tubeBottomY; y += 10) {
+                ctx.beginPath();
+                ctx.moveTo(80, y);
+                ctx.lineTo(y % 50 === 0 ? 65 : 72, y);
+                ctx.stroke();
+                if (y % 50 === 0) {
+                    ctx.fillText(((tubeBottomY - y) / scale).toFixed(0), 45, y + 3);
+                }
+            }
+
+            // Draw Base Water (U-Shape)
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.7)'; // Translucent water blue
+            
+            ctx.beginPath();
+            // Left column water
+            ctx.rect(tubeLeftX, waterLeftTop, tubeWidth, tubeBottomY - waterLeftTop);
+            // Right column water below interface level z
+            ctx.rect(tubeRightX, waterRightTop, tubeWidth, tubeBottomY - waterRightTop);
+            // Bottom bend
+            ctx.arc(tubeLeftX + (tubeRightX - tubeLeftX) / 2 + tubeWidth/2, tubeBottomY, (tubeRightX - tubeLeftX) / 2 + tubeWidth/2, 0, Math.PI);
+            ctx.fill();
+
+            // Draw Added Test Liquid (Right Limb)
+            ctx.fillStyle = 'rgba(251, 146, 60, 0.85)'; // Translucent orange liquid
+            ctx.beginPath();
+            ctx.rect(tubeRightX, liquidRightTop, tubeWidth, hlPx);
+            ctx.fill();
+
+            // Draw Glass Tube Contour
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            // Outer wall
+            ctx.moveTo(tubeLeftX, tubeTopY);
+            ctx.lineTo(tubeLeftX, tubeBottomY);
+            ctx.arc(tubeLeftX + (tubeRightX - tubeLeftX + tubeWidth)/2, tubeBottomY, (tubeRightX - tubeLeftX + tubeWidth)/2, Math.PI, 0, true);
+            ctx.lineTo(tubeRightX + tubeWidth, tubeTopY);
+            // Inner wall
+            ctx.moveTo(tubeLeftX + tubeWidth, tubeTopY);
+            ctx.lineTo(tubeLeftX + tubeWidth, tubeBottomY);
+            ctx.arc(tubeLeftX + (tubeRightX - tubeLeftX + tubeWidth)/2, tubeBottomY, (tubeRightX - tubeLeftX - tubeWidth)/2, Math.PI, 0, true);
+            ctx.lineTo(tubeRightX, tubeTopY);
+            ctx.stroke();
+
+            // Draw Interface Reference Line (Level z)
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(tubeLeftX - 15, waterRightTop);
+            ctx.lineTo(tubeRightX + tubeWidth + 15, waterRightTop);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset line dash
+
+            // Draw Measurement Indicators
+            // h_l indicator
+            drawArrow(tubeRightX + tubeWidth + 10, waterRightTop, tubeRightX + tubeWidth + 10, liquidRightTop, '#c2410c');
+            ctx.fillStyle = '#c2410c';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(`hₗ = ${hl.toFixed(1)} cm`, tubeRightX + tubeWidth + 15, (waterRightTop + liquidRightTop) / 2);
+
+            // h_w indicator
+            drawArrow(tubeLeftX - 10, waterRightTop, tubeLeftX - 10, waterLeftTop, '#0284c7');
+            ctx.fillStyle = '#0284c7';
+            ctx.fillText(`hₚ = ${hw.toFixed(1)} cm`, tubeLeftX - 65, (waterRightTop + waterLeftTop) / 2);
+
+            // Label Reference Level z
+            ctx.fillStyle = '#ef4444';
+            ctx.fillText('Level z (Interface)', tubeLeftX + tubeWidth + 5, waterRightTop + 12);
+        }
+
+        function drawArrow(fromx, fromy, tox, toy, color) {
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.stroke();
+
+            // Arrowheads
+            const headlen = 5;
+            const angle = Math.atan2(toy - fromy, tox - fromx);
+            ctx.beginPath();
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.fill();
+        }
+
+        function recordData() {
+            const hl = parseFloat(document.getElementById('liquidVol').value);
+            const hw = hl * densityL;
+            const ratio = hw / hl;
+
+            dataset.push({ hl, hw });
+
+            // Update Table
+            const tbody = document.getElementById('dataTable');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${dataset.length}</td>
+                <td>${hl.toFixed(1)}</td>
+                <td>${hw.toFixed(1)}</td>
+                <td>${ratio.toFixed(2)}</td>
+            `;
+            tbody.appendChild(row);
+
+            // Update Chart
+            chart.data.datasets[0].data.push({ x: hl, y: hw });
+            
+            // Recalculate best fit line
+            const maxHl = Math.max(...dataset.map(d => d.hl), 30);
+            chart.data.datasets[1].data = [
+                { x: 0, y: 0 },
+                { x: maxHl, y: maxHl * densityL }
+            ];
+
+            chart.update();
+        }
+
+        function resetSim() {
+            dataset = [];
+            document.getElementById('dataTable').innerHTML = '';
+            chart.data.datasets[0].data = [];
+            chart.data.datasets[1].data = [];
+            chart.update();
+            updateValues();
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            initChart();
+            updateValues();
+        };
+    </script>
+</body>
+</html>
