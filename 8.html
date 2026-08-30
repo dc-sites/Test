@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Practical: Helix Spring Oscillation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #0088cc;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 900px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .simulation-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas#simCanvas {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 400px;
+            height: 350px;
+        }
+
+        .controls {
+            width: 100%;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #006699;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .stopwatch-display {
+            font-family: monospace;
+            font-size: 1.5rem;
+            background: #222;
+            color: #00ff00;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 4px;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card simulation-area">
+        <h2>Laboratory Setup</h2>
+        <canvas id="simCanvas"></canvas>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="massSelect"><strong>Suspended Mass (m):</strong></label>
+                <select id="massSelect">
+                    <option value="50">50 g</option>
+                    <option value="100">100 g</option>
+                    <option value="150">150 g</option>
+                    <option value="200">200 g</option>
+                    <option value="250">250 g</option>
+                    <option value="300">300 g</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <button id="oscillateBtn">Displace & Release</button>
+                <div class="stopwatch-display" id="stopwatch">0.00 s</div>
+            </div>
+
+            <div class="control-group">
+                <button id="timerBtn">Start Stopwatch</button>
+                <button id="resetTimerBtn">Reset Stopwatch</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Theory & Verification</h2>
+        <p><strong>Formula:</strong> $T = 2\pi \sqrt{\frac{m}{k}} \implies T^2 = \left(\frac{4\pi^2}{k}\right) m$</p>
+        <p>Plotting $T^2$ against $m$ yields a straight line through the origin, verifying $T^2 \propto m$.</p>
+        
+        <div class="chart-container">
+            <canvas id="graphCanvas"></canvas>
+        </div>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+        <h2>Readings & Calculations (Table 11.1)</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Mass m (g)</th>
+                        <th colspan="2">Time for 50 oscillations (s)</th>
+                        <th rowspan="2">Mean Time (s)</th>
+                        <th rowspan="2">Period T (s)</th>
+                        <th rowspan="2">T² (s²)</th>
+                        <th rowspan="2">Action</th>
+                    </tr>
+                    <tr>
+                        <th>(i)</th>
+                        <th>(ii)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Physics Parameters
+    const k = 15; // Spring constant (N/m)
+    let selectedMassGrams = 50;
+    
+    // Animation variables
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    let animationId = null;
+    let isOscillating = false;
+    let startTime = 0;
+    let amplitude = 0;
+    let currentY = 150;
+    const restY = 150;
+
+    // Stopwatch variables
+    let timerRunning = false;
+    let timerStartTime = 0;
+    let timerElapsedTime = 0;
+    let timerInterval = null;
+
+    // Canvas scaling
+    function resizeCanvas() {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Render Physics Visualizer
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const centerX = canvas.width / 2;
+        const topY = 40;
+
+        // Draw Stand
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.moveTo(centerX - 60, canvas.height - 20);
+        ctx.lineTo(centerX - 60, 20);
+        ctx.lineTo(centerX, 20);
+        ctx.stroke();
+
+        // Calculate position if oscillating
+        if (isOscillating) {
+            const m = selectedMassGrams / 1000;
+            const omega = Math.sqrt(k / m);
+            const t = (performance.now() - startTime) / 1000;
+            const damping = Math.exp(-0.15 * t);
+            currentY = restY + amplitude * Math.cos(omega * t) * damping;
+        }
+
+        // Draw Spring
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(centerX, topY);
+        
+        const coils = 20;
+        const springLength = currentY - topY;
+        const step = springLength / coils;
+        
+        for (let i = 0; i < coils; i++) {
+            const xOffset = (i % 2 === 0 ? 1 : -1) * 12;
+            ctx.lineTo(centerX + xOffset, topY + step * i);
+        }
+        ctx.lineTo(centerX, currentY);
+        ctx.stroke();
+
+        // Draw Indicator Line
+        ctx.strokeStyle = 'cyan';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(centerX, currentY);
+        ctx.lineTo(centerX - 55, currentY);
+        ctx.stroke();
+
+        // Draw Locating Pin on Stand
+        ctx.fillStyle = 'red';
+        ctx.fillRect(centerX - 63, restY - 2, 8, 4);
+
+        // Draw Mass Weight
+        ctx.fillStyle = '#444';
+        const weightHeight = 20 + (selectedMassGrams / 10);
+        ctx.fillRect(centerX - 15, currentY, 30, weightHeight);
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(selectedMassGrams + 'g', centerX, currentY + weightHeight / 2 + 4);
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+
+    // Controls Logic
+    document.getElementById('massSelect').addEventListener('change', (e) => {
+        selectedMassGrams = parseFloat(e.target.value);
+        isOscillating = false;
+        currentY = restY;
+    });
+
+    document.getElementById('oscillateBtn').addEventListener('click', () => {
+        amplitude = 30;
+        startTime = performance.now();
+        isOscillating = true;
+    });
+
+    // Stopwatch Logic
+    const stopwatchDisplay = document.getElementById('stopwatch');
+    const timerBtn = document.getElementById('timerBtn');
+    
+    timerBtn.addEventListener('click', () => {
+        if (!timerRunning) {
+            timerRunning = true;
+            timerStartTime = Date.now() - timerElapsedTime;
+            timerInterval = setInterval(() => {
+                timerElapsedTime = Date.now() - timerStartTime;
+                stopwatchDisplay.textContent = (timerElapsedTime / 1000).toFixed(2) + ' s';
+            }, 10);
+            timerBtn.textContent = 'Stop Stopwatch';
+            timerBtn.style.backgroundColor = '#d9534f';
+        } else {
+            timerRunning = false;
+            clearInterval(timerInterval);
+            timerBtn.textContent = 'Start Stopwatch';
+            timerBtn.style.backgroundColor = 'var(--primary-color)';
+        }
+    });
+
+    document.getElementById('resetTimerBtn').addEventListener('click', () => {
+        timerRunning = false;
+        clearInterval(timerInterval);
+        timerElapsedTime = 0;
+        stopwatchDisplay.textContent = '0.00 s';
+        timerBtn.textContent = 'Start Stopwatch';
+        timerBtn.style.backgroundColor = 'var(--primary-color)';
+    });
+
+    // Chart Setup
+    const chartCtx = document.getElementById('graphCanvas').getContext('2d');
+    const graphChart = new Chart(chartCtx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'T² vs m',
+                data: [],
+                backgroundColor: '#0088cc',
+                borderColor: '#0088cc',
+                showLine: true,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: { display: true, text: 'Mass m (g)' },
+                    min: 0,
+                    suggestedMax: 350
+                },
+                y: {
+                    title: { display: true, text: 'T² (s²)' },
+                    min: 0,
+                    suggestedMax: 1.0
+                }
+            }
+        }
+    });
+
+    // Table Data Management
+    const defaultMasses = [50, 100, 150, 200, 250, 300];
+    const tableBody = document.getElementById('tableBody');
+
+    function calculateRow(row) {
+        const m = parseFloat(row.querySelector('.mass-val').innerText);
+        const t1 = parseFloat(row.querySelector('.t1-input').value) || 0;
+        const t2 = parseFloat(row.querySelector('.t2-input').value) || 0;
+        
+        let meanTime = 0;
+        let period = 0;
+        let periodSq = 0;
+
+        if (t1 > 0 && t2 > 0) {
+            meanTime = (t1 + t2) / 2;
+            period = meanTime / 50;
+            periodSq = period * period;
+        }
+
+        row.querySelector('.mean-time').innerText = meanTime ? meanTime.toFixed(2) : '-';
+        row.querySelector('.period').innerText = period ? period.toFixed(3) : '-';
+        row.querySelector('.period-sq').innerText = periodSq ? periodSq.toFixed(4) : '-';
+
+        updateChart();
+    }
+
+    function updateChart() {
+        const rows = tableBody.querySelectorAll('tr');
+        const points = [];
+
+        rows.forEach(row => {
+            const m = parseFloat(row.querySelector('.mass-val').innerText);
+            const tSqText = row.querySelector('.period-sq').innerText;
+            if (tSqText !== '-') {
+                points.push({ x: m, y: parseFloat(tSqText) });
+            }
+        });
+
+        graphChart.data.datasets[0].data = points;
+        graphChart.update();
+    }
+
+    defaultMasses.forEach(m => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="mass-val">${m}</td>
+            <td><input type="number" class="t1-input" step="0.1" placeholder="t1"></td>
+            <td><input type="number" class="t2-input" step="0.1" placeholder="t2"></td>
+            <td class="mean-time">-</td>
+            <td class="period">-</td>
+            <td class="period-sq">-</td>
+            <td><button onclick="autoFill(${m}, this)" style="padding: 4px 8px; font-size: 0.75rem;">Simulate Data</button></td>
+        `;
+
+        tr.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => calculateRow(tr));
+        });
+
+        tableBody.appendChild(tr);
+    });
+
+    window.autoFill = function(mGrams, btn) {
+        const tr = btn.closest('tr');
+        const mKg = mGrams / 1000;
+        const theoreticalT = 2 * Math.PI * Math.sqrt(mKg / k);
+        const t50 = theoreticalT * 50;
+        
+        // Add minor human error (+/- 0.3s)
+        const t1 = (t50 + (Math.random() * 0.6 - 0.3)).toFixed(2);
+        const t2 = (t50 + (Math.random() * 0.6 - 0.3)).toFixed(2);
+
+        tr.querySelector('.t1-input').value = t1;
+        tr.querySelector('.t2-input').value = t2;
+        calculateRow(tr);
+    };
+</script>
+
+</body>
+</html>
