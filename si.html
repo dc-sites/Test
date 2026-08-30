@@ -11,6 +11,19 @@
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <style>
     :root {
       --primary-color: #0077b6;
@@ -28,7 +41,7 @@
     }
 
     body {
-      font-family: 'Noto Sans Sinhala', sans-serif;
+      font-family: 'Noto Sans Sinhala', -apple-system, BlinkMacSystemFont, sans-serif;
       background-color: var(--bg-color);
       color: #333;
       line-height: 1.6;
@@ -55,6 +68,7 @@
     header h1 {
       font-size: 1.5rem;
       font-weight: 700;
+      font-family: 'Noto Sans Sinhala', sans-serif;
     }
 
     .card {
@@ -72,6 +86,7 @@
       border-bottom: 2px solid var(--accent-color);
       padding-bottom: 5px;
       display: inline-block;
+      font-family: 'Noto Sans Sinhala', sans-serif;
     }
 
     /* Practical Setup Layout */
@@ -102,17 +117,16 @@
     .formula-box {
       background: #eef9ff;
       border-left: 4px solid var(--primary-color);
-      padding: 12px;
+      padding: 15px;
       margin-bottom: 15px;
       border-radius: 4px;
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
 
     .formula-math {
       text-align: center;
-      font-family: serif;
-      font-size: 1.1rem;
-      margin: 8px 0;
+      font-size: 1.2rem;
+      margin: 12px 0;
     }
 
     /* Controls */
@@ -130,7 +144,7 @@
 
     .control-group label {
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     input[type="range"] {
@@ -184,7 +198,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       text-align: center;
     }
 
@@ -227,7 +241,7 @@
     <div class="card">
       <h2>සිද්ධාන්තය</h2>
       <div class="formula-box">
-        <p>සරල අවලම්බයේ දිග $l$ ද, දෝලන ආවර්ත කාලය $T$ ද නම්:</p>
+        <p>සරල අවලම්බයේ දිග $l$ ද, දෝලන ආවර්ත කාලය $T$ ද, නම්:</p>
         <div class="formula-math">
           $$T = 2\pi \sqrt{\frac{l}{g}}$$
         </div>
@@ -235,8 +249,10 @@
         <div class="formula-math">
           $$T^2 = \left(\frac{4\pi^2}{g}\right) l$$
         </div>
-        <p>$l$ ට එරෙහිව $T^2$ ප්‍රස්ථාරයේ අනුක්‍රමණය ($m$) = $\frac{4\pi^2}{g}$</p>
-        <p>එබැවින්, <strong>$g = \frac{4\pi^2}{m}$</strong> වේ.</p>
+        <p>$l$ ට එරෙහිව $T^2$ ප්‍රස්ථාරයේ අනුක්‍රමණය $= \frac{4\pi^2}{g}$</p>
+        <div class="formula-math">
+          $$g = \frac{4\pi^2}{\text{අනුක්‍රමණය}}$$
+        </div>
       </div>
     </div>
 
@@ -278,7 +294,7 @@
         <table>
           <thead>
             <tr>
-              <th colspan="2">$l$ (cm)</th>
+              <th colspan="2">$l\text{ (cm)}$</th>
               <th>40</th>
               <th>50</th>
               <th>60</th>
@@ -298,11 +314,11 @@
               <td id="t2-0">-</td><td id="t2-1">-</td><td id="t2-2">-</td><td id="t2-3">-</td><td id="t2-4">-</td><td id="t2-5">-</td>
             </tr>
             <tr>
-              <td colspan="2">ආවර්ත කාලය $T$ (s)</td>
+              <td colspan="2">ආවර්ත කාලය $T\text{ (s)}$</td>
               <td id="T-0">-</td><td id="T-1">-</td><td id="T-2">-</td><td id="T-3">-</td><td id="T-4">-</td><td id="T-5">-</td>
             </tr>
             <tr>
-              <td colspan="2">$T^2$ ($s^2$)</td>
+              <td colspan="2">$T^2\text{ (s}^2\text{)}$</td>
               <td id="T2-0">-</td><td id="T2-1">-</td><td id="T2-2">-</td><td id="T2-3">-</td><td id="T2-4">-</td><td id="T2-5">-</td>
             </tr>
           </tbody>
@@ -319,30 +335,26 @@
         <canvas id="graphCanvas"></canvas>
       </div>
       <div id="resultBox" class="result-box" style="display: none;">
-        <p>ප්‍රස්ථාරයේ අනුක්‍රමණය ($m$): <span id="slopeVal">0</span> $s^2/m$</p>
-        <p>ගණනය කළ ගුරුත්වජ ත්වරණය ($g$): <span id="gVal">0</span> $m/s^2$</p>
+        <p>ප්‍රස්ථාරයේ අනුක්‍රමණය ($m$): <span id="slopeVal">0</span> $\text{s}^2/\text{m}$</p>
+        <p>ගණනය කළ ගුරුත්වජ ත්වරණය ($g$): <span id="gVal">0</span> $\text{m/s}^2$</p>
       </div>
     </div>
   </div>
 
   <script>
-    // Constants & Variables
-    const g_actual = 9.81; // Standard gravity
-    const lengths = [0.40, 0.50, 0.60, 0.70, 0.80, 0.90]; // in meters
+    const g_actual = 9.81;
+    const lengths = [0.40, 0.50, 0.60, 0.70, 0.80, 0.90];
     let recordedData = Array(6).fill(null).map(() => ({ t1: null, t2: null, T: null, T2: null }));
     
     let currentLengthIdx = 0;
     let isRunning = false;
     let startTime = 0;
     let elapsedTime = 0;
-    let timerInterval = null;
     let animFrame = null;
 
-    // Canvas Elements
     const pCanvas = document.getElementById('pendulumCanvas');
     const pCtx = pCanvas.getContext('2d');
 
-    // UI Elements
     const lengthSlider = document.getElementById('lengthSlider');
     const lengthVal = document.getElementById('lengthVal');
     const timerDisplay = document.getElementById('timerDisplay');
@@ -352,22 +364,19 @@
     const plotBtn = document.getElementById('plotBtn');
     const resultBox = document.getElementById('resultBox');
 
-    // Drawing Pendulum
     function drawPendulum(angle = 0) {
       pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
       
       const pivotX = pCanvas.width / 2;
       const pivotY = 30;
-      const L_px = 50 + (lengthSlider.value - 40) * 3.5; // Scale length for canvas
+      const L_px = 50 + (lengthSlider.value - 40) * 3.5;
 
       const bobX = pivotX + L_px * Math.sin(angle);
       const bobY = pivotY + L_px * Math.cos(angle);
 
-      // Support
       pCtx.fillStyle = '#333';
       pCtx.fillRect(pivotX - 40, pivotY - 10, 80, 10);
 
-      // String
       pCtx.beginPath();
       pCtx.moveTo(pivotX, pivotY);
       pCtx.lineTo(bobX, bobY);
@@ -375,7 +384,6 @@
       pCtx.lineWidth = 2;
       pCtx.stroke();
 
-      // Bob
       pCtx.beginPath();
       pCtx.arc(bobX, bobY, 12, 0, Math.PI * 2);
       pCtx.fillStyle = '#0077b6';
@@ -385,7 +393,6 @@
       pCtx.stroke();
     }
 
-    // Animation Loop
     function animate() {
       if (!isRunning) return;
       
@@ -393,13 +400,11 @@
       const period = 2 * Math.PI * Math.sqrt(L / g_actual);
       const currentTime = (Date.now() - startTime) / 1000;
       
-      // Small angle approximation amplitude (approx 5 degrees = 0.087 rad)
       const maxAngle = 0.087; 
       const angle = maxAngle * Math.cos((2 * Math.PI / period) * currentTime);
 
       drawPendulum(angle);
 
-      // Stop automatically after 25 oscillations
       const totalTargetTime = period * 25;
       if (currentTime >= totalTargetTime) {
         elapsedTime = totalTargetTime;
@@ -438,7 +443,6 @@
       drawPendulum(0);
     }
 
-    // Controls Event Listeners
     lengthSlider.addEventListener('input', (e) => {
       lengthVal.textContent = e.target.value;
       currentLengthIdx = (e.target.value - 40) / 10;
@@ -452,7 +456,6 @@
       const idx = currentLengthIdx;
       const rec = recordedData[idx];
 
-      // Slight natural variance simulating student error
       const randomNoise = (Math.random() - 0.5) * 0.15;
       const finalTime = parseFloat((elapsedTime + randomNoise).toFixed(2));
 
@@ -463,7 +466,6 @@
         rec.t2 = finalTime;
         document.getElementById(`t2-${idx}`).textContent = rec.t2.toFixed(2);
 
-        // Calculate Average T and T^2
         const avgTime25 = (rec.t1 + rec.t2) / 2;
         rec.T = avgTime25 / 25;
         rec.T2 = Math.pow(rec.T, 2);
@@ -481,15 +483,13 @@
       plotBtn.disabled = !isComplete;
     }
 
-    // Chart.js Setup
     const ctxGraph = document.getElementById('graphCanvas').getContext('2d');
     let chartInstance = null;
 
     plotBtn.addEventListener('click', () => {
-      const xVals = lengths; // in meters (0.4 to 0.9)
+      const xVals = lengths;
       const yVals = recordedData.map(d => d.T2);
 
-      // Linear Regression Calculation
       const n = xVals.length;
       let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
       for (let i = 0; i < n; i++) {
@@ -502,7 +502,6 @@
       const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
       const calculatedG = (4 * Math.PI * Math.PI) / slope;
 
-      // Plot Graph
       if (chartInstance) chartInstance.destroy();
 
       chartInstance = new Chart(ctxGraph, {
@@ -510,7 +509,7 @@
         data: {
           datasets: [
             {
-              label: 'ලබාගත් පාඨාංක ($T^2$ vs $l$)',
+              label: 'ලබාගත් පාඨාංක (T² vs l)',
               data: xVals.map((x, i) => ({ x: x, y: yVals[i] })),
               backgroundColor: '#0077b6'
             },
@@ -543,13 +542,15 @@
         }
       });
 
-      // Display calculated values
       document.getElementById('slopeVal').textContent = slope.toFixed(2);
       document.getElementById('gVal').textContent = calculatedG.toFixed(2);
       resultBox.style.display = 'block';
+
+      if (window.MathJax) {
+        MathJax.typesetPromise([resultBox]);
+      }
     });
 
-    // Initial Render
     drawPendulum(0);
   </script>
 </body>
