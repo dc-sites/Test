@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Physics Virtual Lab: Method of Cooling</title>
+  <style>
+    :root {
+      --primary: #007bff;
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #333333;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .card-title {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 1.05rem;
+      border-bottom: 2px solid var(--bg);
+      padding-bottom: 5px;
+    }
+    .control-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 3px;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      border: 1fr solid #ccc;
+      border-radius: 5px;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:disabled {
+      background: #ccc;
+    }
+    button.reset {
+      background: #dc3545;
+    }
+    .readout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+    }
+    .readout-val {
+      font-family: monospace;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .table-container {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Determination of Specific Heat Capacity</h1>
+  <div class="subtitle">Method of Cooling (Newton's Law of Cooling Simulator)</div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">1. Setup & Controls</div>
+      
+      <div class="control-group">
+        <label for="liquidSelect">Select Substance in Calorimeter:</label>
+        <select id="liquidSelect" onchange="resetExperiment()">
+          <option value="water">Water (c = 4200 J kg⁻¹ K⁻¹)</option>
+          <option value="unknown">Unknown Liquid</option>
+        </select>
+      </div>
+
+      <div class="readout">
+        <span>Stopwatch (Time):</span>
+        <span id="displayTime" class="readout-val">00:00 s</span>
+      </div>
+
+      <div class="readout">
+        <span>Thermometer (&theta;):</span>
+        <span id="displayTemp" class="readout-val">70.0 °C</span>
+      </div>
+
+      <button id="startBtn" onclick="toggleTimer()">Start Experiment</button>
+      <button class="reset" onclick="resetExperiment()">Reset Equipment</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2. Fixed Data Measurements</div>
+      <p style="font-size:0.85rem; margin-top:0;">Recorded values using the Triple Beam Balance:</p>
+      <ul>
+        <li><strong>m₁</strong> (Mass of empty calorimeter + stirrer): <strong>65.0 g</strong></li>
+        <li><strong>m₂</strong> (Mass of calorimeter + water): <strong>165.0 g</strong></li>
+        <li><strong>m₃</strong> (Mass of calorimeter + liquid): <strong>145.0 g</strong></li>
+        <li><strong>c</strong> (Specific heat capacity of copper): <strong>400 J kg⁻¹ K⁻¹</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">3. Cooling Curve Visualization</div>
+      <canvas id="coolingChart" width="400" height="250"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-title">4. Observation Data Table</div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Time (s)</th>
+              <th>Water Temp (°C)</th>
+              <th>Liquid Temp (°C)</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let timerId = null;
+  let isRunning = false;
+  let time = 0; // seconds
+  let currentTemp = 70.0;
+  const roomTemp = 25.0;
+  
+  // Storage for plot data
+  let waterData = [];
+  let liquidData = [];
+  
+  // Active liquid type tracking
+  let activeType = 'water';
+
+  const canvas = document.getElementById('coolingChart');
+  const ctx = canvas.getContext('2d');
+
+  function getCoolingRate(type) {
+    // Water vs Unknown Liquid cooling constant (k) based on thermal properties
+    return type === 'water' ? 0.0035 : 0.0062;
+  }
+
+  function toggleTimer() {
+    if (isRunning) {
+      clearInterval(timerId);
+      document.getElementById('startBtn').innerText = 'Resume';
+      isRunning = false;
+    } else {
+      isRunning = true;
+      document.getElementById('startBtn').innerText = 'Pause';
+      timerId = setInterval(stepSimulation, 1000); // 1 sec simulation step
+    }
+  }
+
+  function stepSimulation() {
+    time += 30; // Step by 30 seconds interval per tick for faster demonstration
+    const k = getCoolingRate(activeType);
+
+    // Newton's Law of Cooling formula: T(t) = T_env + (T_0 - T_env) * e^(-k * t)
+    currentTemp = roomTemp + (70.0 - roomTemp) * Math.exp(-k * time);
+
+    // Update UI elements
+    document.getElementById('displayTime').innerText = `${time} s`;
+    document.getElementById('displayTemp').innerText = `${currentTemp.toFixed(1)} °C`;
+
+    recordData(time, currentTemp.toFixed(1));
+    drawGraph();
+
+    if (currentTemp <= 40.0) {
+      clearInterval(timerId);
+      isRunning = false;
+      document.getElementById('startBtn').innerText = 'Completed';
+      document.getElementById('startBtn').disabled = true;
+    }
+  }
+
+  function recordData(t, temp) {
+    if (activeType === 'water') {
+      waterData.push({ time: t, temp: parseFloat(temp) });
+    } else {
+      liquidData.push({ time: t, temp: parseFloat(temp) });
+    }
+    updateTable();
+  }
+
+  function updateTable() {
+    const tbody = document.getElementById('dataTable');
+    tbody.innerHTML = '';
+    
+    // Union of all unique recorded timestamps
+    const times = Array.from(new Set([...waterData.map(d => d.time), ...liquidData.map(d => d.time)])).sort((a,b) => a - b);
+    
+    times.forEach(t => {
+      const wPt = waterData.find(d => d.time === t);
+      const lPt = liquidData.find(d => d.time === t);
+      
+      const row = `<tr>
+        <td>${t}</td>
+        <td>${wPt ? wPt.temp : '-'}</td>
+        <td>${lPt ? lPt.temp : '-'}</td>
+      </tr>`;
+      tbody.innerHTML += row;
+    });
+  }
+
+  function resetExperiment() {
+    clearInterval(timerId);
+    isRunning = false;
+    time = 0;
+    currentTemp = 70.0;
+    activeType = document.getElementById('liquidSelect').value;
+    
+    document.getElementById('startBtn').innerText = 'Start Experiment';
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('displayTime').innerText = '0 s';
+    document.getElementById('displayTemp').innerText = '70.0 °C';
+
+    drawGraph();
+  }
+
+  function drawGraph() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw Graph Axes
+    ctx.beginPath();
+    ctx.strokeStyle = '#aaa';
+    ctx.lineWidth = 1;
+    ctx.moveTo(40, 20);
+    ctx.lineTo(40, 210);
+    ctx.lineTo(380, 210);
+    ctx.stroke();
+
+    // Axis Labels
+    ctx.fillStyle = '#333';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('Temp (°C)', 5, 15);
+    ctx.fillText('Time (s)', 350, 235);
+
+    // Plot helper mapping
+    const mapX = (t) => 40 + (t / 600) * 330; // scale 0-600s to canvas width
+    const mapY = (temp) => 210 - ((temp - 20) / 60) * 180; // scale 20-80°C to canvas height
+
+    // Render Line Series
+    const drawSeries = (data, color) => {
+      if (data.length === 0) return;
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.moveTo(mapX(data[0].time), mapY(data[0].temp));
+      data.forEach(pt => ctx.lineTo(mapX(pt.time), mapY(pt.temp)));
+      ctx.stroke();
+    };
+
+    drawSeries(waterData, '#007bff'); // Water: Blue
+    drawSeries(liquidData, '#dc3545'); // Liquid: Red
+  }
+
+  // Initial setup render
+  drawGraph();
+</script>
+</body>
+</html>
