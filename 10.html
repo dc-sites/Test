@@ -1,560 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sonometer Practical Simulator</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary: #0284c7;
-            --primary-dark: #0369a1;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #0f172a;
-            --border: #e2e8f0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sonometer Practical Simulator</title>
+  <style>
+    :root {
+      --bg-color: #f4f7f6;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --accent-color: #007bc7;
+      --accent-hover: #005fa3;
+      --border-color: #cccccc;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 1rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+    header {
+      text-align: center;
+      margin-bottom: 15px;
+      width: 100%;
+      max-width: 900px;
+    }
 
-        h1 {
-            color: var(--primary-dark);
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
+    h1 {
+      font-size: 1.5rem;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
+    p.subtitle {
+      font-size: 0.9rem;
+      color: #666;
+    }
 
-        @media (min-width: 900px) {
-            .grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      width: 100%;
+      max-width: 900px;
+    }
 
-        .card {
-            background: var(--card-bg);
-            padding: 1.25rem;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+    @media (min-width: 768px) {
+      .container {
+        grid-template-columns: 1fr 1fr;
+      }
+      .canvas-card {
+        grid-column: span 2;
+      }
+    }
 
-        .card h2 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--bg);
-            padding-bottom: 0.5rem;
-        }
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-        /* Canvas Experiment Animation */
-        #apparatusCanvas {
-            width: 100%;
-            height: 180px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 4px;
+    }
 
-        /* Controls styling */
-        .control-group {
-            margin-bottom: 1rem;
-        }
+    canvas {
+      width: 100%;
+      height: 220px;
+      background: #eef4f8;
+      border: 1fr solid var(--border-color);
+      border-radius: 6px;
+      display: block;
+    }
 
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.4rem;
-        }
+    .control-group {
+      margin-bottom: 12px;
+    }
 
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--primary);
-        }
+    label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 5px;
+    }
 
-        .val-display {
-            font-weight: normal;
-            color: var(--primary-dark);
-        }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      accent-color: var(--accent-color);
+    }
 
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
 
-        button {
-            flex: 1;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 6px;
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            min-width: 120px;
-        }
+    button {
+      flex: 1;
+      padding: 10px;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
 
-        button:hover {
-            background: var(--primary-dark);
-        }
+    button:hover {
+      background-color: var(--accent-hover);
+    }
 
-        button.secondary {
-            background: #64748b;
-        }
+    button.secondary {
+      background-color: #6c757d;
+    }
 
-        button.secondary:hover {
-            background: #475569;
-        }
+    button.secondary:hover {
+      background-color: #5a6268;
+    }
 
-        /* Table Styling */
-        .table-container {
-            overflow-x: auto;
-            margin-top: 1rem;
-        }
+    .table-wrapper {
+      overflow-x: auto;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: center;
-            font-size: 0.85rem;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: center;
+    }
 
-        th, td {
-            padding: 0.5rem;
-            border: 1px solid var(--border);
-        }
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 6px;
+    }
 
-        th {
-            background: var(--bg);
-        }
+    th {
+      background-color: #e9ecef;
+    }
 
-        /* Result Verification */
-        .calc-box {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
+    .status-box {
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      background: #e9f5ff;
+      border-left: 4px solid var(--accent-color);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
 
-        input[type="number"] {
-            width: 100%;
-            padding: 0.5rem;
-            margin: 0.4rem 0;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-        }
-
-        #feedback {
-            margin-top: 0.5rem;
-            font-weight: bold;
-        }
-
-        .status-box {
-            padding: 0.5rem;
-            border-radius: 6px;
-            text-align: center;
-            font-weight: bold;
-            margin-top: 0.5rem;
-        }
-        .rider-on { background: #dcfce7; color: #166534; }
-        .rider-off { background: #fee2e2; color: #991b1b; }
-
-        canvas#graphCanvas {
-            max-height: 250px;
-        }
-    </style>
+    .info-box {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: #444;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-    <h1>Determination of Tuning Fork Frequency using Sonometer</h1>
-    <p style="font-size: 0.85rem; color: #64748b;">Formula: <i>f</i> = 1 / (2<i>l</i>) &times; &radic;(<i>T</i> / <i>m</i>) &nbsp;|&nbsp; Graph: <i>l</i>² vs <i>M</i></p>
-</header>
+  <header>
+    <h1>Sonometer Experiment Simulator</h1>
+    <p class="subtitle">Determination of the frequency of a tuning fork using resonance</p>
+  </header>
 
-<div class="grid">
-    <div class="card">
-        <h2>1. Experimental Apparatus</h2>
-        <canvas id="apparatusCanvas"></canvas>
-        
-        <div id="riderStatus" class="status-box rider-on">Paper Rider: On Wire</div>
-
-        <div style="margin-top: 1rem;">
-            <div class="control-group">
-                <label>Suspended Mass (M): <span class="val-display" id="massVal">0.5 kg</span></label>
-                <input type="range" id="massSlider" min="0.5" max="3.5" step="0.5" value="0.5">
-            </div>
-
-            <div class="control-group">
-                <label>Bridge Spacing / Wire Length (l): <span class="val-display" id="lengthVal">20.0 cm</span></label>
-                <input type="range" id="lengthSlider" min="10" max="60" step="0.1" value="20.0">
-            </div>
-        </div>
-
-        <div class="btn-group">
-            <button id="vibrateBtn">Vibrate Tuning Fork</button>
-            <button id="recordBtn" class="secondary">Record Data Point</button>
-        </div>
+  <main class="container">
+    <div class="card canvas-card">
+      <h2>Apparatus View</h2>
+      <canvas id="simCanvas"></canvas>
+      <div id="statusText" class="status-box">Status: Ready. Pluck wire or excite tuning fork to observe vibration.</div>
     </div>
 
     <div class="card">
-        <h2>2. Data Collection (Table 12.1)</h2>
-        <div class="table-container">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>M (kg)</th>
-                        <th>l (cm)</th>
-                        <th>l² (cm²)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
-        </div>
+      <h2>Controls</h2>
+      <div class="control-group">
+        <label>Suspended Mass ($M$): <span id="massVal">0.50 kg</span></label>
+        <input type="range" id="massSlider" min="0.5" max="3.5" step="0.5" value="0.5" />
+      </div>
 
-        <div class="btn-group">
-            <button id="plotBtn">Plot l² vs M Graph</button>
-            <button id="clearBtn" class="secondary">Clear Table</button>
-        </div>
-    </div>
-</div>
+      <div class="control-group">
+        <label>Bridge Distance ($l$): <span id="lenVal">10.0 cm</span></label>
+        <input type="range" id="lenSlider" min="5" max="100" step="0.1" value="10.0" />
+      </div>
 
-<div class="grid" style="margin-top: 1.5rem;">
-    <div class="card">
-        <h2>3. Plot: l² (cm²) vs M (kg)</h2>
-        <canvas id="graphCanvas"></canvas>
+      <div class="control-group">
+        <label>Wire Linear Mass Density ($m$): <span>0.00125 kg/m</span></label>
+      </div>
+
+      <div class="btn-group">
+        <button id="pluckBtn">Vibrate Tuning Fork</button>
+        <button id="recordBtn" class="secondary">Record Data</button>
+      </div>
     </div>
 
     <div class="card">
-        <h2>4. Calculations & Verification</h2>
-        <p style="font-size: 0.85rem;"><strong>Wire Linear Mass Density (m):</strong> 0.001 kg/m (1.0 g/m)</p>
-        <p style="font-size: 0.85rem;"><strong>Acceleration due to gravity (g):</strong> 9.81 m/s²</p>
-
-        <div class="calc-box">
-            <label>Calculated Graph Gradient (cm²/kg):</label>
-            <input type="number" id="userGradient" placeholder="e.g. 800">
-
-            <label>Calculated Frequency f (Hz):</label>
-            <input type="number" id="userFreq" placeholder="e.g. 256">
-
-            <button id="checkBtn" style="width: 100%; margin-top: 0.5rem;">Check Answer</button>
-            <div id="feedback"></div>
-        </div>
+      <h2>Recorded Data (Table 12.1)</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>$M$ (kg)</th>
+              <th>$l$ (cm)</th>
+              <th>$l^2$ ($\text{cm}^2$)</th>
+            </tr>
+          </thead>
+          <tbody id="dataTable">
+            </tbody>
+        </table>
+      </div>
     </div>
-</div>
+  </main>
 
-<script>
-    // Physics constants (Hidden actual frequency)
-    const ACTUAL_FREQ = 256; // Hz
-    const LINEAR_DENSITY = 0.001; // kg/m
-    const G = 9.81; // m/s²
-
-    // State
-    let riderFallen = false;
-    let recordedData = [];
+  <script>
+    // Physics Constants
+    const TRUE_FREQUENCY = 256; // Fixed hidden/known tuning fork frequency (Hz)
+    const G = 9.81; // Gravity (m/s^2)
+    const M_DENSITY = 0.00125; // Mass per unit length (kg/m)
 
     // Elements
-    const massSlider = document.getElementById('massSlider');
-    const lengthSlider = document.getElementById('lengthSlider');
-    const massVal = document.getElementById('massVal');
-    const lengthVal = document.getElementById('lengthVal');
-    const vibrateBtn = document.getElementById('vibrateBtn');
-    const recordBtn = document.getElementById('recordBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const plotBtn = document.getElementById('plotBtn');
-    const checkBtn = document.getElementById('checkBtn');
-    const riderStatus = document.getElementById('riderStatus');
-    const canvas = document.getElementById('apparatusCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("simCanvas");
+    const ctx = canvas.getContext("2d");
+    const massSlider = document.getElementById("massSlider");
+    const lenSlider = document.getElementById("lenSlider");
+    const massVal = document.getElementById("massVal");
+    const lenVal = document.getElementById("lenVal");
+    const statusText = document.getElementById("statusText");
+    const pluckBtn = document.getElementById("pluckBtn");
+    const recordBtn = document.getElementById("recordBtn");
+    const dataTable = document.getElementById("dataTable");
 
-    // Chart initialization
-    let chart;
-    function initChart() {
-        const chartCtx = document.getElementById('graphCanvas').getContext('2d');
-        chart = new Chart(chartCtx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'l² vs M',
-                    data: [],
-                    backgroundColor: '#0284c7'
-                }, {
-                    label: 'Best Fit Line',
-                    data: [],
-                    type: 'line',
-                    borderColor: '#0369a1',
-                    fill: false,
-                    pointRadius: 0
-                }]
-            },
-            options: {
-                scales: {
-                    x: { title: { display: true, text: 'Mass M (kg)' }, min: 0 },
-                    y: { title: { display: true, text: 'l² (cm²)' }, min: 0 }
-                }
-            }
-        });
-    }
-
-    // Update UI Labels
-    massSlider.addEventListener('input', (e) => {
-        massVal.textContent = parseFloat(e.target.value).toFixed(1) + ' kg';
-        resetRider();
-        drawApparatus();
-    });
-
-    lengthSlider.addEventListener('input', (e) => {
-        lengthVal.textContent = parseFloat(e.target.value).toFixed(1) + ' cm';
-        resetRider();
-        drawApparatus();
-    });
-
-    function resetRider() {
-        riderFallen = false;
-        riderStatus.textContent = "Paper Rider: On Wire";
-        riderStatus.className = "status-box rider-on";
-    }
-
-    // Calculate theoretical resonance length (in cm)
-    function getResonanceLength(M) {
-        const T = M * G; // Tension in N
-        const l_meters = (1 / (2 * ACTUAL_FREQ)) * Math.sqrt(T / LINEAR_DENSITY);
-        return l_meters * 100; // cm
-    }
-
-    // Simulation animation
+    // Animation variables
     let isVibrating = false;
-    vibrateBtn.addEventListener('click', () => {
-        const M = parseFloat(massSlider.value);
-        const currentL = parseFloat(lengthSlider.value);
-        const resL = getResonanceLength(M);
+    let vibrationAmplitude = 0;
+    let paperRiderFell = false;
+    let animFrame;
 
-        isVibrating = true;
-        let frame = 0;
+    function resizeCanvas() {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
-        const animate = () => {
-            if (frame < 30) {
-                drawApparatus(Math.sin(frame * 0.8) * 3);
-                frame++;
-                requestAnimationFrame(animate);
-            } else {
-                isVibrating = false;
-                // Check if close to resonance (within ± 0.8 cm tolerance)
-                if (Math.abs(currentL - resL) < 0.8) {
-                    riderFallen = true;
-                    riderStatus.textContent = "Paper Rider: THROWN OFF (Resonance!)";
-                    riderStatus.className = "status-box rider-off";
-                } else {
-                    riderStatus.textContent = "Paper Rider: Remained on Wire";
-                    riderStatus.className = "status-box rider-on";
-                }
-                drawApparatus();
-            }
-        };
-        animate();
-    });
-
-    // Draw Sonometer Apparatus
-    function drawApparatus(amplitude = 0) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Scale canvas internally for sharp display
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-
-        const w = canvas.width;
-        const h = canvas.height;
-
-        // Draw Sonometer Box
-        ctx.fillStyle = '#d97706';
-        ctx.fillRect(40, h - 70, w - 120, 40);
-
-        // Pulley
-        ctx.fillStyle = '#64748b';
-        ctx.beginPath();
-        ctx.arc(w - 70, h - 50, 15, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Bridges
-        const b1X = 60;
-        const currentL = parseFloat(lengthSlider.value);
-        const maxL = 60;
-        const b2X = b1X + (currentL / maxL) * (w - 180);
-
-        ctx.fillStyle = '#475569';
-        // Bridge 1
-        ctx.beginPath();
-        ctx.moveTo(b1X - 10, h - 70);
-        ctx.lineTo(b1X + 10, h - 70);
-        ctx.lineTo(b1X, h - 85);
-        ctx.closePath();
-        ctx.fill();
-
-        // Bridge 2
-        ctx.beginPath();
-        ctx.moveTo(b2X - 10, h - 70);
-        ctx.lineTo(b2X + 10, h - 70);
-        ctx.lineTo(b2X, h - 85);
-        ctx.closePath();
-        ctx.fill();
-
-        // Wire
-        ctx.strokeStyle = '#0f172a';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(40, h - 85);
-        
-        // Vibrating middle segment
-        const midX = (b1X + b2X) / 2;
-        ctx.lineTo(b1X, h - 85);
-        ctx.quadraticCurveTo(midX, h - 85 + amplitude, b2X, h - 85);
-        ctx.lineTo(w - 70, h - 85);
-        ctx.lineTo(w - 70, h - 30);
-        ctx.stroke();
-
-        // Mass Load
-        ctx.fillStyle = '#334155';
-        ctx.fillRect(w - 82, h - 30, 24, 20);
-        ctx.fillStyle = '#fff';
-        ctx.font = '10px sans-serif';
-        ctx.fillText(massSlider.value + 'kg', w - 80, h - 16);
-
-        // Paper Rider (if not fallen)
-        if (!riderFallen) {
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(midX - 4, h - 88 + amplitude / 2);
-            ctx.lineTo(midX, h - 83 + amplitude / 2);
-            ctx.lineTo(midX + 4, h - 88 + amplitude / 2);
-            ctx.stroke();
-        }
+    function calculateResonanceLength(M) {
+      // f = 1/(2l) * sqrt(Mg/m) => l = 1/(2f) * sqrt(Mg/m)
+      const l_meters = (1 / (2 * TRUE_FREQUENCY)) * Math.sqrt((M * G) / M_DENSITY);
+      return l_meters * 100; // cm
     }
 
-    // Data Recording
-    recordBtn.addEventListener('click', () => {
-        const M = parseFloat(massSlider.value);
-        const l = parseFloat(lengthSlider.value);
-        const lSq = (l * l).toFixed(1);
+    function update() {
+      const M = parseFloat(massSlider.value);
+      const l = parseFloat(lenSlider.value);
 
-        recordedData.push({ M, l, lSq: parseFloat(lSq) });
-        updateTable();
-    });
+      massVal.textContent = M.toFixed(2) + " kg";
+      lenVal.textContent = l.toFixed(1) + " cm";
 
-    function updateTable() {
-        const tbody = document.querySelector('#dataTable tbody');
-        tbody.innerHTML = '';
-        recordedData.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${row.M.toFixed(1)}</td><td>${row.l.toFixed(1)}</td><td>${row.lSq.toFixed(1)}</td>`;
-            tbody.appendChild(tr);
-        });
-    }
+      const resonantLen = calculateResonanceLength(M);
+      const diff = Math.abs(l - resonantLen);
 
-    clearBtn.addEventListener('click', () => {
-        recordedData = [];
-        updateTable();
-        chart.data.datasets[0].data = [];
-        chart.data.datasets[1].data = [];
-        chart.update();
-    });
-
-    // Plotting & Best Fit Line
-    plotBtn.addEventListener('click', () => {
-        if (recordedData.length < 2) {
-            alert('Please record at least 2 data points first!');
-            return;
-        }
-
-        const scatterData = recordedData.map(d => ({ x: d.M, y: d.lSq }));
-
-        // Calculate linear regression
-        let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-        const n = recordedData.length;
-        recordedData.forEach(d => {
-            sumX += d.M;
-            sumY += d.lSq;
-            sumXY += d.M * d.lSq;
-            sumX2 += d.M * d.M;
-        });
-
-        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-        const intercept = (sumY - slope * sumX) / n;
-
-        const maxM = Math.max(...recordedData.map(d => d.M));
-        const lineData = [
-            { x: 0, y: intercept },
-            { x: maxM, y: slope * maxM + intercept }
-        ];
-
-        chart.data.datasets[0].data = scatterData;
-        chart.data.datasets[1].data = lineData;
-        chart.update();
-    });
-
-    // Verification Logic
-    checkBtn.addEventListener('click', () => {
-        const userGrad = parseFloat(document.getElementById('userGradient').value);
-        const userFreq = parseFloat(document.getElementById('userFreq').value);
-        const feedback = document.getElementById('feedback');
-
-        if (isNaN(userGrad) || isNaN(userFreq)) {
-            feedback.innerHTML = "<span style='color:red;'>Please enter numerical values.</span>";
-            return;
-        }
-
-        // Standard gradient value for this setup:
-        // l^2 (in m^2) = (g / (4 * f^2 * m)) * M
-        // l^2 (in cm^2) = 10000 * (g / (4 * f^2 * m)) * M
-        const expectedGradient = 10000 * (G / (4 * ACTUAL_FREQ * ACTUAL_FREQ * LINEAR_DENSITY));
-        const gradErr = Math.abs(userGrad - expectedGradient) / expectedGradient;
-        const freqErr = Math.abs(userFreq - ACTUAL_FREQ) / ACTUAL_FREQ;
-
-        if (freqErr < 0.05) {
-            feedback.innerHTML = `<span style='color:green;'> Excellent! Frequency is accurate within 5% error. (Actual ~${ACTUAL_FREQ} Hz)</span>`;
+      // Check for resonance condition (width of resonance curve)
+      if (isVibrating) {
+        if (diff < 0.6) {
+          vibrationAmplitude = 12; // High amplitude at resonance
+          paperRiderFell = true;
+          statusText.textContent = "Resonance Reached! Paper rider was thrown off!";
+          statusText.style.borderLeftColor = "#28a745";
+        } else if (diff < 2.5) {
+          vibrationAmplitude = Math.max(1, 12 - diff * 4);
+          statusText.textContent = "Wire vibrating, near resonance...";
+          statusText.style.borderLeftColor = "#ffc107";
         } else {
-            feedback.innerHTML = `<span style='color:red;'> Close, but recalculate using: f = &radic;(g / (4 &times; m &times; Gradient_in_m²))</span>`;
+          vibrationAmplitude = 0.5;
+          statusText.textContent = "Minimal vibration (Off resonance).";
+          statusText.style.borderLeftColor = "#007bc7";
         }
+      } else {
+        vibrationAmplitude = 0;
+      }
+
+      draw();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const sonometerY = h * 0.5;
+      const bridge1X = w * 0.15;
+      const wireMaxLen = w * 0.65;
+      const currentLenPx = bridge1X + (wireMaxLen * (parseFloat(lenSlider.value) / 100));
+      const pulleyX = w * 0.85;
+
+      // Draw Sonometer Wooden Box
+      ctx.fillStyle = "#d2b48c";
+      ctx.fillRect(w * 0.1, sonometerY, w * 0.77, 30);
+      ctx.strokeStyle = "#8b5a2b";
+      ctx.strokeRect(w * 0.1, sonometerY, w * 0.77, 30);
+
+      // Draw Bridges
+      ctx.fillStyle = "#444";
+      // Fixed left bridge
+      ctx.beginPath();
+      ctx.moveTo(bridge1X - 8, sonometerY);
+      ctx.lineTo(bridge1X + 8, sonometerY);
+      ctx.lineTo(bridge1X, sonometerY - 15);
+      ctx.fill();
+
+      // Adjustable right bridge
+      ctx.beginPath();
+      ctx.moveTo(currentLenPx - 8, sonometerY);
+      ctx.lineTo(currentLenPx + 8, sonometerY);
+      ctx.lineTo(currentLenPx, sonometerY - 15);
+      ctx.fill();
+
+      // Draw Pulley
+      ctx.beginPath();
+      ctx.arc(pulleyX, sonometerY + 5, 12, 0, Math.PI * 2);
+      ctx.fillStyle = "#888";
+      ctx.fill();
+      ctx.stroke();
+
+      // Draw Wire (Vibrating region between bridges)
+      ctx.strokeStyle = "#111";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(w * 0.1, sonometerY - 15);
+      ctx.lineTo(bridge1X, sonometerY - 15);
+
+      // Vibrating string dynamic rendering
+      if (vibrationAmplitude > 0) {
+        const midX = (bridge1X + currentLenPx) / 2;
+        const waveY = (Math.sin(Date.now() * 0.05) * vibrationAmplitude);
+        ctx.quadraticCurveTo(midX, sonometerY - 15 + waveY, currentLenPx, sonometerY - 15);
+      } else {
+        ctx.lineTo(currentLenPx, sonometerY - 15);
+      }
+
+      // Wire over pulley down to load
+      ctx.lineTo(pulleyX, sonometerY - 15);
+      ctx.lineTo(pulleyX + 12, sonometerY + 60);
+      ctx.stroke();
+
+      // Draw Paper Rider (if not fallen)
+      if (!paperRiderFell) {
+        const riderX = (bridge1X + currentLenPx) / 2;
+        const riderOffsetY = (vibrationAmplitude > 0) ? (Math.sin(Date.now() * 0.05) * vibrationAmplitude) : 0;
+        ctx.fillStyle = "#ff4d4d";
+        ctx.beginPath();
+        ctx.moveTo(riderX - 4, sonometerY - 15 + riderOffsetY);
+        ctx.lineTo(riderX + 4, sonometerY - 15 + riderOffsetY);
+        ctx.lineTo(riderX, sonometerY - 23 + riderOffsetY);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      // Draw Hanging Mass
+      ctx.fillStyle = "#555";
+      ctx.fillRect(pulleyX + 2, sonometerY + 60, 20, 25);
+      ctx.fillStyle = "#fff";
+      ctx.font = "10px sans-serif";
+      ctx.fillText(massSlider.value + "kg", pulleyX + 3, sonometerY + 76);
+    }
+
+    function animate() {
+      update();
+      animFrame = requestAnimationFrame(animate);
+    }
+
+    pluckBtn.addEventListener("click", () => {
+      isVibrating = true;
+      paperRiderFell = false;
+      setTimeout(() => {
+        isVibrating = false;
+      }, 3000);
     });
 
-    // Initial render
-    window.addEventListener('resize', () => drawApparatus());
-    window.addEventListener('load', () => {
-        drawApparatus();
-        initChart();
-    });
-</script>
+    recordBtn.addEventListener("click", () => {
+      const M = parseFloat(massSlider.value);
+      const l = parseFloat(lenSlider.value);
+      const l2 = (l * l).toFixed(1);
 
+      const row = document.createElement("tr");
+      row.innerHTML = `<td>${M.toFixed(2)}</td><td>${l.toFixed(1)}</td><td>${l2}</td>`;
+      dataTable.appendChild(row);
+    });
+
+    massSlider.addEventListener("input", update);
+    lenSlider.addEventListener("input", update);
+
+    // Initial setup
+    animate();
+  </script>
 </body>
 </html>
