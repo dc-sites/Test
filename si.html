@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>සරල අවලම්බය - ගුරුත්වජ ත්වරණය සෙවීම</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --primary-color: #0077b6;
+      --secondary-color: #03045e;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --border-color: #e0e0e0;
+      --accent-color: #00b4d8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Noto Sans Sinhala', sans-serif;
+      background-color: var(--bg-color);
+      color: #333;
+      line-height: 1.6;
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+      background: var(--primary-color);
+      color: white;
+      padding: 20px 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      border: 1px solid var(--border-color);
+    }
+
+    .card h2 {
+      color: var(--secondary-color);
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 5px;
+      display: inline-block;
+    }
+
+    /* Practical Setup Layout */
+    .practical-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .practical-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fafafa;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      height: 320px;
+      position: relative;
+    }
+
+    /* Formula Box */
+    .formula-box {
+      background: #eef9ff;
+      border-left: 4px solid var(--primary-color);
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+
+    .formula-math {
+      text-align: center;
+      font-family: serif;
+      font-size: 1.1rem;
+      margin: 8px 0;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-group label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary-color);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 15px;
+      border: none;
+      background-color: var(--primary-color);
+      color: white;
+      font-family: 'Noto Sans Sinhala', sans-serif;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      min-width: 120px;
+    }
+
+    button:hover {
+      background-color: var(--secondary-color);
+    }
+
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background-color: #495057;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px 5px;
+    }
+
+    th {
+      background-color: #f1f3f5;
+      color: var(--secondary-color);
+    }
+
+    /* Graph Container */
+    .graph-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+    }
+
+    /* Output Results */
+    .result-box {
+      margin-top: 15px;
+      padding: 12px;
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      border-radius: 5px;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>සරල අවලම්බය භාවිතයෙන් ගුරුත්වජ ත්වරණය සෙවීම</h1>
+    </header>
+
+    <div class="card">
+      <h2>සිද්ධාන්තය</h2>
+      <div class="formula-box">
+        <p>සරල අවලම්බයේ දිග $l$ ද, දෝලන ආවර්ත කාලය $T$ ද නම්:</p>
+        <div class="formula-math">
+          $$T = 2\pi \sqrt{\frac{l}{g}}$$
+        </div>
+        <p>දෙපසම වර්ග කිරීමෙන්:</p>
+        <div class="formula-math">
+          $$T^2 = \left(\frac{4\pi^2}{g}\right) l$$
+        </div>
+        <p>$l$ ට එරෙහිව $T^2$ ප්‍රස්ථාරයේ අනුක්‍රමණය ($m$) = $\frac{4\pi^2}{g}$</p>
+        <p>එබැවින්, <strong>$g = \frac{4\pi^2}{m}$</strong> වේ.</p>
+      </div>
+    </div>
+
+    <div class="practical-grid">
+      <div class="card">
+        <h2>පරීක්ෂණ සැකසුම</h2>
+        <div class="canvas-container">
+          <canvas id="pendulumCanvas" width="300" height="300"></canvas>
+        </div>
+      </div>
+
+      <div class="card controls">
+        <h2>පාලක පුවරුව</h2>
+        
+        <div class="control-group">
+          <label for="lengthSlider">අවලම්බයේ දිග ($l$): <span id="lengthVal">40</span> cm</label>
+          <input type="range" id="lengthSlider" min="40" max="90" step="10" value="40">
+        </div>
+
+        <div class="control-group">
+          <label>දෝලන සංඛ්‍යාව: <strong>25</strong></label>
+          <label>ගතවූ කාලය (තත්පර): <span id="timerDisplay" style="font-size: 1.2rem; font-weight: bold; color: var(--primary-color);">0.00</span> s</label>
+        </div>
+
+        <div class="btn-group">
+          <button id="startBtn">ආරම්භ කරන්න</button>
+          <button id="resetBtn" class="btn-secondary">නැවත මුලට</button>
+        </div>
+
+        <div class="btn-group">
+          <button id="recordBtn" style="background-color: #2b9348;" disabled>සටහන් කරගන්න</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>පාඨාංක හා ගණනය</h2>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">$l$ (cm)</th>
+              <th>40</th>
+              <th>50</th>
+              <th>60</th>
+              <th>70</th>
+              <th>80</th>
+              <th>90</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2">දෝලන 25 කට කාලය (s)</td>
+              <td>(i)</td>
+              <td id="t1-0">-</td><td id="t1-1">-</td><td id="t1-2">-</td><td id="t1-3">-</td><td id="t1-4">-</td><td id="t1-5">-</td>
+            </tr>
+            <tr>
+              <td>(ii)</td>
+              <td id="t2-0">-</td><td id="t2-1">-</td><td id="t2-2">-</td><td id="t2-3">-</td><td id="t2-4">-</td><td id="t2-5">-</td>
+            </tr>
+            <tr>
+              <td colspan="2">ආවර්ත කාලය $T$ (s)</td>
+              <td id="T-0">-</td><td id="T-1">-</td><td id="T-2">-</td><td id="T-3">-</td><td id="T-4">-</td><td id="T-5">-</td>
+            </tr>
+            <tr>
+              <td colspan="2">$T^2$ ($s^2$)</td>
+              <td id="T2-0">-</td><td id="T2-1">-</td><td id="T2-2">-</td><td id="T2-3">-</td><td id="T2-4">-</td><td id="T2-5">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="btn-group" style="margin-top: 15px;">
+        <button id="plotBtn" disabled>ප්‍රස්ථාරය අඳින්න</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>$l$ ට එරෙහිව $T^2$ ප්‍රස්ථාරය</h2>
+      <div class="graph-container">
+        <canvas id="graphCanvas"></canvas>
+      </div>
+      <div id="resultBox" class="result-box" style="display: none;">
+        <p>ප්‍රස්ථාරයේ අනුක්‍රමණය ($m$): <span id="slopeVal">0</span> $s^2/m$</p>
+        <p>ගණනය කළ ගුරුත්වජ ත්වරණය ($g$): <span id="gVal">0</span> $m/s^2$</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Constants & Variables
+    const g_actual = 9.81; // Standard gravity
+    const lengths = [0.40, 0.50, 0.60, 0.70, 0.80, 0.90]; // in meters
+    let recordedData = Array(6).fill(null).map(() => ({ t1: null, t2: null, T: null, T2: null }));
+    
+    let currentLengthIdx = 0;
+    let isRunning = false;
+    let startTime = 0;
+    let elapsedTime = 0;
+    let timerInterval = null;
+    let animFrame = null;
+
+    // Canvas Elements
+    const pCanvas = document.getElementById('pendulumCanvas');
+    const pCtx = pCanvas.getContext('2d');
+
+    // UI Elements
+    const lengthSlider = document.getElementById('lengthSlider');
+    const lengthVal = document.getElementById('lengthVal');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const recordBtn = document.getElementById('recordBtn');
+    const plotBtn = document.getElementById('plotBtn');
+    const resultBox = document.getElementById('resultBox');
+
+    // Drawing Pendulum
+    function drawPendulum(angle = 0) {
+      pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+      
+      const pivotX = pCanvas.width / 2;
+      const pivotY = 30;
+      const L_px = 50 + (lengthSlider.value - 40) * 3.5; // Scale length for canvas
+
+      const bobX = pivotX + L_px * Math.sin(angle);
+      const bobY = pivotY + L_px * Math.cos(angle);
+
+      // Support
+      pCtx.fillStyle = '#333';
+      pCtx.fillRect(pivotX - 40, pivotY - 10, 80, 10);
+
+      // String
+      pCtx.beginPath();
+      pCtx.moveTo(pivotX, pivotY);
+      pCtx.lineTo(bobX, bobY);
+      pCtx.strokeStyle = '#555';
+      pCtx.lineWidth = 2;
+      pCtx.stroke();
+
+      // Bob
+      pCtx.beginPath();
+      pCtx.arc(bobX, bobY, 12, 0, Math.PI * 2);
+      pCtx.fillStyle = '#0077b6';
+      pCtx.fill();
+      pCtx.strokeStyle = '#03045e';
+      pCtx.lineWidth = 1.5;
+      pCtx.stroke();
+    }
+
+    // Animation Loop
+    function animate() {
+      if (!isRunning) return;
+      
+      const L = parseFloat(lengthSlider.value) / 100;
+      const period = 2 * Math.PI * Math.sqrt(L / g_actual);
+      const currentTime = (Date.now() - startTime) / 1000;
+      
+      // Small angle approximation amplitude (approx 5 degrees = 0.087 rad)
+      const maxAngle = 0.087; 
+      const angle = maxAngle * Math.cos((2 * Math.PI / period) * currentTime);
+
+      drawPendulum(angle);
+
+      // Stop automatically after 25 oscillations
+      const totalTargetTime = period * 25;
+      if (currentTime >= totalTargetTime) {
+        elapsedTime = totalTargetTime;
+        timerDisplay.textContent = elapsedTime.toFixed(2);
+        stopSimulation();
+        return;
+      }
+
+      elapsedTime = currentTime;
+      timerDisplay.textContent = elapsedTime.toFixed(2);
+      animFrame = requestAnimationFrame(animate);
+    }
+
+    function startSimulation() {
+      isRunning = true;
+      startTime = Date.now() - (elapsedTime * 1000);
+      startBtn.disabled = true;
+      lengthSlider.disabled = true;
+      recordBtn.disabled = true;
+      animate();
+    }
+
+    function stopSimulation() {
+      isRunning = false;
+      cancelAnimationFrame(animFrame);
+      startBtn.disabled = false;
+      lengthSlider.disabled = false;
+      recordBtn.disabled = false;
+    }
+
+    function resetSimulation() {
+      stopSimulation();
+      elapsedTime = 0;
+      timerDisplay.textContent = '0.00';
+      recordBtn.disabled = true;
+      drawPendulum(0);
+    }
+
+    // Controls Event Listeners
+    lengthSlider.addEventListener('input', (e) => {
+      lengthVal.textContent = e.target.value;
+      currentLengthIdx = (e.target.value - 40) / 10;
+      resetSimulation();
+    });
+
+    startBtn.addEventListener('click', startSimulation);
+    resetBtn.addEventListener('click', resetSimulation);
+
+    recordBtn.addEventListener('click', () => {
+      const idx = currentLengthIdx;
+      const rec = recordedData[idx];
+
+      // Slight natural variance simulating student error
+      const randomNoise = (Math.random() - 0.5) * 0.15;
+      const finalTime = parseFloat((elapsedTime + randomNoise).toFixed(2));
+
+      if (rec.t1 === null) {
+        rec.t1 = finalTime;
+        document.getElementById(`t1-${idx}`).textContent = rec.t1.toFixed(2);
+      } else {
+        rec.t2 = finalTime;
+        document.getElementById(`t2-${idx}`).textContent = rec.t2.toFixed(2);
+
+        // Calculate Average T and T^2
+        const avgTime25 = (rec.t1 + rec.t2) / 2;
+        rec.T = avgTime25 / 25;
+        rec.T2 = Math.pow(rec.T, 2);
+
+        document.getElementById(`T-${idx}`).textContent = rec.T.toFixed(2);
+        document.getElementById(`T2-${idx}`).textContent = rec.T2.toFixed(2);
+      }
+
+      recordBtn.disabled = true;
+      checkTableCompletion();
+    });
+
+    function checkTableCompletion() {
+      const isComplete = recordedData.every(d => d.T2 !== null);
+      plotBtn.disabled = !isComplete;
+    }
+
+    // Chart.js Setup
+    const ctxGraph = document.getElementById('graphCanvas').getContext('2d');
+    let chartInstance = null;
+
+    plotBtn.addEventListener('click', () => {
+      const xVals = lengths; // in meters (0.4 to 0.9)
+      const yVals = recordedData.map(d => d.T2);
+
+      // Linear Regression Calculation
+      const n = xVals.length;
+      let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+      for (let i = 0; i < n; i++) {
+        sumX += xVals[i];
+        sumY += yVals[i];
+        sumXY += xVals[i] * yVals[i];
+        sumXX += xVals[i] * xVals[i];
+      }
+
+      const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+      const calculatedG = (4 * Math.PI * Math.PI) / slope;
+
+      // Plot Graph
+      if (chartInstance) chartInstance.destroy();
+
+      chartInstance = new Chart(ctxGraph, {
+        type: 'scatter',
+        data: {
+          datasets: [
+            {
+              label: 'ලබාගත් පාඨාංක ($T^2$ vs $l$)',
+              data: xVals.map((x, i) => ({ x: x, y: yVals[i] })),
+              backgroundColor: '#0077b6'
+            },
+            {
+              label: 'අනුරූප රේඛාව (Best Fit Line)',
+              data: [
+                { x: 0.3, y: slope * 0.3 },
+                { x: 1.0, y: slope * 1.0 }
+              ],
+              type: 'line',
+              borderColor: '#d90429',
+              fill: false,
+              pointRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: { display: true, text: 'දිග l (m)' },
+              min: 0
+            },
+            y: {
+              title: { display: true, text: 'T² (s²)' },
+              min: 0
+            }
+          }
+        }
+      });
+
+      // Display calculated values
+      document.getElementById('slopeVal').textContent = slope.toFixed(2);
+      document.getElementById('gVal').textContent = calculatedG.toFixed(2);
+      resultBox.style.display = 'block';
+    });
+
+    // Initial Render
+    drawPendulum(0);
+  </script>
+</body>
+</html>
