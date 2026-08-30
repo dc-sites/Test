@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>හැයාර්ගේ උපකරණය - භෞතික විද්‍යා සිමියුලේටරය</title>
+    <!-- Sinhala Font Loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans Sinhala', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 992px) {
+            .container {
+                grid-template-columns: 320px 1fr 340px;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        select, input[type="range"], button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            background: var(--primary-light);
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 5px;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Simulator Canvas Area */
+        .simulator-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            min-height: 450px;
+            position: relative;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Formula & Table styles */
+        .formula-box {
+            background: #eff6ff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-light);
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #f1f5f9;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-open { background: #dcfce7; color: #15803d; }
+        .status-closed { background: #fee2e2; color: #b91c1c; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>හැයාර්ගේ උපකරණය (Hare's Apparatus)</h1>
+        <p>ද්‍රවයක සාපේක්ෂ ඝනත්වය සෙවීම - අතථ්‍ය ප්‍රායෝගික පරීක්ෂණාගාරය</p>
+    </header>
+
+    <div class="container">
+        <!-- Controls Panel -->
+        <div class="card">
+            <h2>පාලක පුවරුව</h2>
+            
+            <div class="form-group">
+                <label for="liquidSelect">පරීක්ෂණ ද්‍රවය තෝරන්න:</label>
+                <select id="liquidSelect">
+                    <option value="0.80">මෙතිලේටඩ් ස්පිරිට් (ρ ≈ 0.80 g/cm³)</option>
+                    <option value="1.26">ග්ලිසරීන් (ρ ≈ 1.26 g/cm³)</option>
+                    <option value="0.79">ඇසිටෝන් (ρ ≈ 0.79 g/cm³)</option>
+                    <option value="1.03">කිරි (ρ ≈ 1.03 g/cm³)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>කපාටයේ තත්ත්වය (Valve):</label>
+                <button id="valveBtn" class="btn">කපාටය විවෘත කරන්න</button>
+            </div>
+
+            <div class="form-group">
+                <label for="suctionRange">චූෂණ ප්‍රමාණය (Suction):</label>
+                <input type="range" id="suctionRange" min="0" max="100" value="0" disabled>
+            </div>
+
+            <button id="recordBtn" class="btn" style="background:#10b981;">පාඨාංකය සටහන් කරගන්න</button>
+            <button id="resetBtn" class="btn btn-danger" style="margin-top:10px;">නැවත මුල සිට ආරම්භ කරන්න</button>
+
+            <div class="formula-box">
+                <strong>මූලධර්මය & සූත්‍රය:</strong>
+                <p>h<sub>l</sub> · ρ<sub>l</sub> = h<sub>w</sub> · ρ<sub>w</sub></p>
+                <p>සාපේක්ෂ ඝනත්වය (S.G) = h<sub>w</sub> / h<sub>l</sub></p>
+            </div>
+        </div>
+
+        <!-- Simulation View Area -->
+        <div class="card simulator-box">
+            <canvas id="simCanvas" width="400" height="500"></canvas>
+        </div>
+
+        <!-- Data & Results Panel -->
+        <div class="card">
+            <h2>දත්ත සහ නිරීක්ෂණ</h2>
+            <div>
+                තත්ත්වය: <span id="valveStatus" class="status-badge status-closed">කපාටය වසා ඇත</span>
+            </div>
+
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>අංකය</th>
+                        <th>h<sub>l</sub> (ද්‍රවය) [cm]</th>
+                        <th>h<sub>w</sub> (ජලය) [cm]</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dynamic Data -->
+                </tbody>
+            </table>
+
+            <div class="formula-box" style="margin-top:20px; background:#f0fdf4; border-color:#22c55e;">
+                <strong>ගණනය කළ ප්‍රතිඵල:</strong>
+                <p>සාපේක්ෂ ඝනත්වය (ගණනය කළ): <span id="calcRely">--</span></p>
+                <p>සැබෑ සාපේක්ෂ ඝනත්වය: <span id="actualRely">0.80</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State Variables
+        let valveOpen = false;
+        let suctionValue = 0;
+        let liquidDensity = 0.80; // Default Spirit
+        const waterDensity = 1.00;
+        let records = [];
+
+        // UI Elements
+        const valveBtn = document.getElementById('valveBtn');
+        const suctionRange = document.getElementById('suctionRange');
+        const liquidSelect = document.getElementById('liquidSelect');
+        const recordBtn = document.getElementById('recordBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const valveStatus = document.getElementById('valveStatus');
+        const dataTableBody = document.querySelector('#dataTable tbody');
+        const calcRelyEl = document.getElementById('calcRely');
+        const actualRelyEl = document.getElementById('actualRely');
+
+        // Event Listeners
+        valveBtn.addEventListener('click', () => {
+            valveOpen = !valveOpen;
+            if(valveOpen) {
+                valveBtn.innerText = "කපාටය වසන්න";
+                valveStatus.innerText = "කපාටය විවෘතයි";
+                valveStatus.className = "status-badge status-open";
+                suctionRange.disabled = false;
+            } else {
+                valveBtn.innerText = "කපාටය විවෘත කරන්න";
+                valveStatus.innerText = "කපාටය වසා ඇත";
+                valveStatus.className = "status-badge status-closed";
+                suctionRange.disabled = true;
+            }
+            draw();
+        });
+
+        liquidSelect.addEventListener('change', (e) => {
+            liquidDensity = parseFloat(e.target.value);
+            actualRelyEl.innerText = liquidDensity.toFixed(2);
+            resetData();
+            draw();
+        });
+
+        suctionRange.addEventListener('input', (e) => {
+            if(valveOpen) {
+                suctionValue = parseFloat(e.target.value);
+                draw();
+            }
+        });
+
+        recordBtn.addEventListener('click', () => {
+            if (suctionValue > 0) {
+                let h_water = (suctionValue * 3.5) / waterDensity;
+                let h_liquid = (suctionValue * 3.5) / liquidDensity;
+
+                records.push({
+                    hw: (h_water / 10).toFixed(1),
+                    hl: (h_liquid / 10).toFixed(1)
+                });
+                updateTable();
+            }
+        });
+
+        resetBtn.addEventListener('click', resetData);
+
+        function resetData() {
+            suctionValue = 0;
+            suctionRange.value = 0;
+            records = [];
+            updateTable();
+            draw();
+        }
+
+        function updateTable() {
+            dataTableBody.innerHTML = '';
+            let totalRatio = 0;
+
+            records.forEach((rec, index) => {
+                let row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${rec.hl}</td>
+                    <td>${rec.hw}</td>
+                </tr>`;
+                dataTableBody.innerHTML += row;
+                totalRatio += (parseFloat(rec.hw) / parseFloat(rec.hl));
+            });
+
+            if (records.length > 0) {
+                let avgRatio = totalRatio / records.length;
+                calcRelyEl.innerText = avgRatio.toFixed(2);
+            } else {
+                calcRelyEl.innerText = '--';
+            }
+        }
+
+        // Canvas Rendering Function
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculation for heights
+            let h_water = (suctionValue * 2.5) / waterDensity;
+            let h_liquid = (suctionValue * 2.5) / liquidDensity;
+
+            let baseLine = 420;
+
+            // Draw Beakers
+            // Left Beaker (Liquid)
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(50, 350, 100, 80);
+            ctx.fillStyle = '#38bdf8'; // Liquid color
+            ctx.fillRect(50, 370, 100, 60);
+
+            // Right Beaker (Water)
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(250, 350, 100, 80);
+            ctx.fillStyle = '#60a5fa'; // Water color
+            ctx.fillRect(250, 370, 100, 60);
+
+            // Draw Glass Tubes (U-Tube Inverted)
+            ctx.lineWidth = 8;
+            ctx.strokeStyle = '#cbd5e1';
+
+            // Left Tube
+            ctx.beginPath();
+            ctx.moveTo(100, 390);
+            ctx.lineTo(100, 100);
+            ctx.lineTo(200, 100);
+            ctx.lineTo(200, 390);
+            ctx.stroke();
+
+            // Top Valve Tube
+            ctx.beginPath();
+            ctx.moveTo(200, 100);
+            ctx.lineTo(200, 50);
+            ctx.stroke();
+
+            // Valve Indicator
+            ctx.fillStyle = valveOpen ? '#22c55e' : '#ef4444';
+            ctx.beginPath();
+            ctx.arc(200, 50, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw Liquid Levels inside Tubes
+            if (suctionValue > 0) {
+                // Left Liquid Column
+                ctx.strokeStyle = '#0284c7';
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(100, 370);
+                ctx.lineTo(100, 370 - h_liquid);
+                ctx.stroke();
+
+                // Right Water Column
+                ctx.strokeStyle = '#2563eb';
+                ctx.beginPath();
+                ctx.moveTo(300, 370);
+                ctx.lineTo(300, 370 - h_water);
+                ctx.stroke();
+            }
+
+            // Labels
+            ctx.fillStyle = '#0f172a';
+            ctx.font = '14px Noto Sans Sinhala';
+            ctx.fillText('පරීක්ෂණ ද්‍රවය', 55, 450);
+            ctx.fillText('ජලය (Water)', 260, 450);
+            
+            ctx.fillText(`h₁ = ${(h_liquid/10).toFixed(1)} cm`, 40, 360 - h_liquid);
+            ctx.fillText(`h₂ = ${(h_water/10).toFixed(1)} cm`, 310, 360 - h_water);
+        }
+
+        // Initial Draw
+        draw();
+    </script>
+</body>
+</html>
