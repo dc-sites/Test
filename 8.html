@@ -1,461 +1,549 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Physics Practical: Helix Spring Oscillation</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --primary-color: #0088cc;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #333;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physics Practical: Oscillations of a Helical Spring</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #00838f;
+      --secondary-color: #e0f7fa;
+      --accent-color: #00acc1;
+      --text-color: #263238;
+      --bg-color: #f4f6f8;
+      --card-bg: #ffffff;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 15px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        h1, h2 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 15px;
+    }
 
-        .container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        @media (min-width: 900px) {
-            .container {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+    header h1 {
+      color: var(--primary-color);
+      font-size: 1.6rem;
+    }
 
-        .card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+    header p {
+      font-size: 0.9rem;
+      color: #546e7a;
+    }
 
-        .simulation-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-        canvas#simCanvas {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            width: 100%;
-            max-width: 400px;
-            height: 350px;
-        }
+    @media (min-width: 900px) {
+      .container {
+        grid-template-columns: 350px 1fr;
+      }
+    }
 
-        .controls {
-            width: 100%;
-            margin-top: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      border: 1px solid #e0e0e0;
+    }
 
-        .control-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .card h2 {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      margin-bottom: 12px;
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 5px;
+    }
 
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
+    /* Simulation Canvas Container */
+    .sim-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #fafafa;
+      border: 1px dashed #b0bec5;
+      border-radius: 6px;
+      padding: 10px;
+      position: relative;
+    }
 
-        button:hover {
-            background-color: #006699;
-        }
+    canvas#simCanvas {
+      background: #fff;
+      border: 1px solid #cfd8dc;
+      border-radius: 4px;
+      max-width: 100%;
+    }
 
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
+    /* Controls */
+    .control-group {
+      margin-top: 15px;
+      width: 100%;
+    }
 
-        .stopwatch-display {
-            font-family: monospace;
-            font-size: 1.5rem;
-            background: #222;
-            color: #00ff00;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-align: center;
-        }
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
 
-        .table-responsive {
-            overflow-x: auto;
-        }
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--primary-color);
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 0.9rem;
-        }
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      width: 100%;
+    }
 
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
-        }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-        th {
-            background-color: var(--primary-color);
-            color: white;
-        }
+    button:hover {
+      background-color: var(--accent-color);
+    }
 
-        input[type="number"] {
-            width: 60px;
-            padding: 4px;
-            text-align: center;
-        }
+    button:disabled {
+      background-color: #b0bec5;
+      cursor: not-allowed;
+    }
 
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-    </style>
+    .btn-sec {
+      background-color: #78909c;
+    }
+
+    .btn-sec:hover {
+      background-color: #607d8b;
+    }
+
+    /* Readouts */
+    .stopwatch-display {
+      font-family: monospace;
+      font-size: 1.4rem;
+      background: #263238;
+      color: #00e676;
+      padding: 6px 15px;
+      border-radius: 4px;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* Data Table */
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    th, td {
+      border: 1px solid #cfd8dc;
+      padding: 8px 4px;
+    }
+
+    th {
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
+    }
+
+    /* Graph Canvas */
+    .graph-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="card simulation-area">
-        <h2>Laboratory Setup</h2>
-        <canvas id="simCanvas"></canvas>
-        
-        <div class="controls">
-            <div class="control-group">
-                <label for="massSelect"><strong>Suspended Mass (m):</strong></label>
-                <select id="massSelect">
-                    <option value="50">50 g</option>
-                    <option value="100">100 g</option>
-                    <option value="150">150 g</option>
-                    <option value="200">200 g</option>
-                    <option value="250">250 g</option>
-                    <option value="300">300 g</option>
-                </select>
-            </div>
+  <header>
+    <h1>Verification of $T^2 \propto m$ for a Helix Spring</h1>
+    <p>Virtual Physics Practical Simulator</p>
+  </header>
 
-            <div class="control-group">
-                <button id="oscillateBtn">Displace & Release</button>
-                <div class="stopwatch-display" id="stopwatch">0.00 s</div>
-            </div>
+  <div class="container">
+    <div class="card">
+      <h2>Apparatus & Controls</h2>
+      
+      <div class="sim-box">
+        <canvas id="simCanvas" width="280" height="320"></canvas>
+        <div class="stopwatch-display" id="timerDisplay">00:00.00</div>
+        <div style="font-size: 0.8rem; margin-top: 4px; color: #546e7a;">Oscillations: <span id="oscCount">0</span> / 50</div>
+      </div>
 
-            <div class="control-group">
-                <button id="timerBtn">Start Stopwatch</button>
-                <button id="resetTimerBtn">Reset Stopwatch</button>
-            </div>
-        </div>
+      <div class="control-group">
+        <label for="massSlider">
+          <span>Suspended Mass ($m$):</span>
+          <span id="massVal">50 g</span>
+        </label>
+        <input type="range" id="massSlider" min="50" max="350" step="50" value="50">
+      </div>
+
+      <div class="btn-group">
+        <button id="startBtn">Release & Time (50 Osc)</button>
+        <button id="resetBtn" class="btn-sec">Reset</button>
+      </div>
+      
+      <div class="btn-group">
+        <button id="recordBtn" style="background-color: #2e7d32;" disabled>Record Data Point</button>
+      </div>
     </div>
 
     <div class="card">
-        <h2>Theory & Verification</h2>
-        <p><strong>Formula:</strong> $T = 2\pi \sqrt{\frac{m}{k}} \implies T^2 = \left(\frac{4\pi^2}{k}\right) m$</p>
-        <p>Plotting $T^2$ against $m$ yields a straight line through the origin, verifying $T^2 \propto m$.</p>
-        
-        <div class="chart-container">
-            <canvas id="graphCanvas"></canvas>
-        </div>
-    </div>
+      <h2>Readings & Analysis</h2>
+      
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th rowspan="2">$m$ (g)</th>
+              <th colspan="2">Time for 50 oscillations (s)</th>
+              <th rowspan="2">$T$ (s)</th>
+              <th rowspan="2">$T^2$ ($\text{s}^2$)</th>
+            </tr>
+            <tr>
+              <th>Trial 1</th>
+              <th>Trial 2</th>
+            </tr>
+          </thead>
+          <tbody id="dataTableBody">
+            </tbody>
+        </table>
+      </div>
 
-    <div class="card" style="grid-column: 1 / -1;">
-        <h2>Readings & Calculations (Table 11.1)</h2>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th rowspan="2">Mass m (g)</th>
-                        <th colspan="2">Time for 50 oscillations (s)</th>
-                        <th rowspan="2">Mean Time (s)</th>
-                        <th rowspan="2">Period T (s)</th>
-                        <th rowspan="2">T² (s²)</th>
-                        <th rowspan="2">Action</th>
-                    </tr>
-                    <tr>
-                        <th>(i)</th>
-                        <th>(ii)</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+      <div style="margin-top: 15px;">
+        <button id="clearTableBtn" class="btn-sec" style="font-size: 0.8rem; padding: 5px 10px;">Clear Table</button>
+      </div>
 
-<script>
+      <h2 style="margin-top: 20px;">Graph: $T^2$ vs $m$</h2>
+      <div class="graph-container">
+        <canvas id="graphCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
     // Physics Parameters
-    const k = 15; // Spring constant (N/m)
-    let selectedMassGrams = 50;
-    
-    // Animation variables
+    const k = 25; // Spring constant (N/m)
+    const TARGET_OSC = 50;
+
+    // Simulation State Variables
+    let mass = 0.05; // mass in kg (50g default)
+    let animating = false;
+    let startTime = 0;
+    let elapsedTime = 0;
+    let currentOscillations = 0;
+    let animReqId = null;
+
+    // Data Storage Structure: { massG: 50, t1: null, t2: null, period: null, periodSq: null }
+    let dataset = [
+      { massG: 50, t1: null, t2: null, period: null, periodSq: null },
+      { massG: 100, t1: null, t2: null, period: null, periodSq: null },
+      { massG: 150, t1: null, t2: null, period: null, periodSq: null },
+      { massG: 200, t1: null, t2: null, period: null, periodSq: null },
+      { massG: 250, t1: null, t2: null, period: null, periodSq: null },
+      { massG: 300, t1: null, t2: null, period: null, periodSq: null }
+    ];
+
+    // Canvas Elements
     const canvas = document.getElementById('simCanvas');
     const ctx = canvas.getContext('2d');
-    let animationId = null;
-    let isOscillating = false;
-    let startTime = 0;
-    let amplitude = 0;
-    let currentY = 150;
-    const restY = 150;
+    const timerDisplay = document.getElementById('timerDisplay');
+    const oscCountDisplay = document.getElementById('oscCount');
 
-    // Stopwatch variables
-    let timerRunning = false;
-    let timerStartTime = 0;
-    let timerElapsedTime = 0;
-    let timerInterval = null;
+    // UI Controls
+    const massSlider = document.getElementById('massSlider');
+    const massVal = document.getElementById('massVal');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const recordBtn = document.getElementById('recordBtn');
+    const clearTableBtn = document.getElementById('clearTableBtn');
 
-    // Canvas scaling
-    function resizeCanvas() {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Render Physics Visualizer
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        const centerX = canvas.width / 2;
-        const topY = 40;
-
-        // Draw Stand
-        ctx.strokeStyle = '#555';
-        ctx.lineWidth = 6;
-        ctx.beginPath();
-        ctx.moveTo(centerX - 60, canvas.height - 20);
-        ctx.lineTo(centerX - 60, 20);
-        ctx.lineTo(centerX, 20);
-        ctx.stroke();
-
-        // Calculate position if oscillating
-        if (isOscillating) {
-            const m = selectedMassGrams / 1000;
-            const omega = Math.sqrt(k / m);
-            const t = (performance.now() - startTime) / 1000;
-            const damping = Math.exp(-0.15 * t);
-            currentY = restY + amplitude * Math.cos(omega * t) * damping;
+    // Initialize Chart.js Graph
+    const graphCtx = document.getElementById('graphCanvas').getContext('2d');
+    const chart = new Chart(graphCtx, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'T² vs m',
+          data: [],
+          backgroundColor: '#00838f',
+          borderColor: '#00838f',
+          showLine: true,
+          fill: false,
+          tension: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: { display: true, text: 'Mass, m (g)' },
+            min: 0,
+            max: 350
+          },
+          y: {
+            title: { display: true, text: 'Period Squared, T² (s²)' },
+            min: 0
+          }
         }
-
-        // Draw Spring
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(centerX, topY);
-        
-        const coils = 20;
-        const springLength = currentY - topY;
-        const step = springLength / coils;
-        
-        for (let i = 0; i < coils; i++) {
-            const xOffset = (i % 2 === 0 ? 1 : -1) * 12;
-            ctx.lineTo(centerX + xOffset, topY + step * i);
-        }
-        ctx.lineTo(centerX, currentY);
-        ctx.stroke();
-
-        // Draw Indicator Line
-        ctx.strokeStyle = 'cyan';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(centerX, currentY);
-        ctx.lineTo(centerX - 55, currentY);
-        ctx.stroke();
-
-        // Draw Locating Pin on Stand
-        ctx.fillStyle = 'red';
-        ctx.fillRect(centerX - 63, restY - 2, 8, 4);
-
-        // Draw Mass Weight
-        ctx.fillStyle = '#444';
-        const weightHeight = 20 + (selectedMassGrams / 10);
-        ctx.fillRect(centerX - 15, currentY, 30, weightHeight);
-        ctx.fillStyle = '#fff';
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(selectedMassGrams + 'g', centerX, currentY + weightHeight / 2 + 4);
-
-        requestAnimationFrame(draw);
-    }
-    draw();
-
-    // Controls Logic
-    document.getElementById('massSelect').addEventListener('change', (e) => {
-        selectedMassGrams = parseFloat(e.target.value);
-        isOscillating = false;
-        currentY = restY;
+      }
     });
 
-    document.getElementById('oscillateBtn').addEventListener('click', () => {
-        amplitude = 30;
-        startTime = performance.now();
-        isOscillating = true;
-    });
+    // Drawing Apparatus
+    function drawApparatus(yDisplacement = 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Stopwatch Logic
-    const stopwatchDisplay = document.getElementById('stopwatch');
-    const timerBtn = document.getElementById('timerBtn');
-    
-    timerBtn.addEventListener('click', () => {
-        if (!timerRunning) {
-            timerRunning = true;
-            timerStartTime = Date.now() - timerElapsedTime;
-            timerInterval = setInterval(() => {
-                timerElapsedTime = Date.now() - timerStartTime;
-                stopwatchDisplay.textContent = (timerElapsedTime / 1000).toFixed(2) + ' s';
-            }, 10);
-            timerBtn.textContent = 'Stop Stopwatch';
-            timerBtn.style.backgroundColor = '#d9534f';
-        } else {
-            timerRunning = false;
-            clearInterval(timerInterval);
-            timerBtn.textContent = 'Start Stopwatch';
-            timerBtn.style.backgroundColor = 'var(--primary-color)';
-        }
-    });
+      // Stand Base and Rod
+      ctx.fillStyle = '#616161';
+      ctx.fillRect(30, 300, 140, 10); // Base
+      ctx.fillRect(50, 20, 10, 280);   // Vertical rod
+      ctx.fillRect(50, 30, 80, 8);    // Top clamp arm
 
-    document.getElementById('resetTimerBtn').addEventListener('click', () => {
-        timerRunning = false;
-        clearInterval(timerInterval);
-        timerElapsedTime = 0;
-        stopwatchDisplay.textContent = '0.00 s';
-        timerBtn.textContent = 'Start Stopwatch';
-        timerBtn.style.backgroundColor = 'var(--primary-color)';
-    });
+      // Pointer Clamp on Support
+      ctx.fillStyle = '#424242';
+      ctx.fillRect(45, 180, 20, 12);
+      // Locating Pin Line (Indicator reference)
+      ctx.strokeStyle = '#00acc1';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(65, 186);
+      ctx.lineTo(170, 186);
+      ctx.stroke();
+      ctx.setLineDash([]);
 
-    // Chart Setup
-    const chartCtx = document.getElementById('graphCanvas').getContext('2d');
-    const graphChart = new Chart(chartCtx, {
-        type: 'scatter',
-        data: {
-            datasets: [{
-                label: 'T² vs m',
-                data: [],
-                backgroundColor: '#0088cc',
-                borderColor: '#0088cc',
-                showLine: true,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    title: { display: true, text: 'Mass m (g)' },
-                    min: 0,
-                    suggestedMax: 350
-                },
-                y: {
-                    title: { display: true, text: 'T² (s²)' },
-                    min: 0,
-                    suggestedMax: 1.0
-                }
-            }
-        }
-    });
+      // Helical Spring Drawing
+      const startX = 110;
+      const startY = 38;
+      const restLength = 110 + (mass * 80); // Slight stretch based on weight
+      const currentLength = restLength + yDisplacement;
+      const turns = 14;
 
-    // Table Data Management
-    const defaultMasses = [50, 100, 150, 200, 250, 300];
-    const tableBody = document.getElementById('tableBody');
+      ctx.strokeStyle = '#37474f';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      
+      for (let i = 0; i <= turns; i++) {
+        const y = startY + (currentLength / turns) * i;
+        const x = startX + (i % 2 === 0 ? 12 : -12);
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(startX, startY + currentLength);
+      ctx.stroke();
 
-    function calculateRow(row) {
-        const m = parseFloat(row.querySelector('.mass-val').innerText);
-        const t1 = parseFloat(row.querySelector('.t1-input').value) || 0;
-        const t2 = parseFloat(row.querySelector('.t2-input').value) || 0;
-        
-        let meanTime = 0;
-        let period = 0;
-        let periodSq = 0;
+      // Suspended Mass Block
+      const blockY = startY + currentLength;
+      ctx.fillStyle = '#37474f';
+      ctx.fillRect(startX - 15, blockY, 30, 30);
+      
+      // Weight slot detailing
+      ctx.fillStyle = '#90a4ae';
+      ctx.fillRect(startX - 12, blockY + 5, 24, 4);
 
-        if (t1 > 0 && t2 > 0) {
-            meanTime = (t1 + t2) / 2;
-            period = meanTime / 50;
-            periodSq = period * period;
-        }
-
-        row.querySelector('.mean-time').innerText = meanTime ? meanTime.toFixed(2) : '-';
-        row.querySelector('.period').innerText = period ? period.toFixed(3) : '-';
-        row.querySelector('.period-sq').innerText = periodSq ? periodSq.toFixed(4) : '-';
-
-        updateChart();
+      // Horizontal Indicator Pointer attached to Mass
+      ctx.strokeStyle = '#d32f2f';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(startX, blockY);
+      ctx.lineTo(startX + 40, blockY);
+      ctx.stroke();
     }
 
-    function updateChart() {
-        const rows = tableBody.querySelectorAll('tr');
-        const points = [];
+    // Update Simulation Frame
+    function updateSim(timestamp) {
+      if (!startTime) startTime = timestamp;
+      
+      const realTimeSec = (timestamp - startTime) / 1000;
+      const T = 2 * Math.PI * Math.sqrt(mass / k); // Calculated period
+      
+      // Calculate oscillation displacement
+      const amplitude = 20; // visual displacement amplitude
+      const omega = (2 * Math.PI) / T;
+      const yDisplacement = amplitude * Math.cos(omega * realTimeSec);
 
-        rows.forEach(row => {
-            const m = parseFloat(row.querySelector('.mass-val').innerText);
-            const tSqText = row.querySelector('.period-sq').innerText;
-            if (tSqText !== '-') {
-                points.push({ x: m, y: parseFloat(tSqText) });
-            }
-        });
+      // Track completed oscillations
+      currentOscillations = Math.floor(realTimeSec / T);
 
-        graphChart.data.datasets[0].data = points;
-        graphChart.update();
+      if (currentOscillations >= TARGET_OSC) {
+        elapsedTime = TARGET_OSC * T;
+        currentOscillations = TARGET_OSC;
+        stopSimulation();
+      } else {
+        elapsedTime = realTimeSec;
+        animReqId = requestAnimationFrame(updateSim);
+      }
+
+      // Add a slight realistic measurement noise (+/- 0.05s scale) when displaying total time
+      timerDisplay.textContent = formatTime(elapsedTime);
+      oscCountDisplay.textContent = currentOscillations;
+      drawApparatus(yDisplacement);
     }
 
-    defaultMasses.forEach(m => {
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      const millis = Math.floor((seconds % 1) * 100);
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(millis).padStart(2, '0')}`;
+    }
+
+    // Start Practical Run
+    startBtn.addEventListener('click', () => {
+      if (animating) return;
+      animating = true;
+      startTime = 0;
+      startBtn.disabled = true;
+      massSlider.disabled = true;
+      recordBtn.disabled = true;
+      animReqId = requestAnimationFrame(updateSim);
+    });
+
+    // Stop Simulation Run
+    function stopSimulation() {
+      animating = false;
+      cancelAnimationFrame(animReqId);
+      recordBtn.disabled = false;
+      drawApparatus(0);
+    }
+
+    // Reset Controls
+    resetBtn.addEventListener('click', () => {
+      animating = false;
+      cancelAnimationFrame(animReqId);
+      startTime = 0;
+      elapsedTime = 0;
+      currentOscillations = 0;
+      timerDisplay.textContent = "00:00.00";
+      oscCountDisplay.textContent = "0";
+      startBtn.disabled = false;
+      massSlider.disabled = false;
+      recordBtn.disabled = true;
+      drawApparatus(0);
+    });
+
+    // Update Mass Slider
+    massSlider.addEventListener('input', (e) => {
+      const g = parseInt(e.target.value);
+      massVal.textContent = `${g} g`;
+      mass = g / 1000;
+      drawApparatus(0);
+    });
+
+    // Record Data to Table
+    recordBtn.addEventListener('click', () => {
+      const mG = parseInt(massSlider.value);
+      const row = dataset.find(d => d.massG === mG);
+
+      // Add small experimental human reaction variation to stopwatch read
+      const simulatedTime = elapsedTime + (Math.random() * 0.12 - 0.06);
+
+      if (row.t1 === null) {
+        row.t1 = simulatedTime;
+      } else {
+        row.t2 = simulatedTime;
+      }
+
+      // If both trials present, update periodic calculations
+      if (row.t1 !== null && row.t2 !== null) {
+        const avg50 = (row.t1 + row.t2) / 2;
+        row.period = avg50 / 50;
+        row.periodSq = Math.pow(row.period, 2);
+      } else if (row.t1 !== null) {
+        row.period = row.t1 / 50;
+        row.periodSq = Math.pow(row.period, 2);
+      }
+
+      updateTableAndGraph();
+      recordBtn.disabled = true;
+    });
+
+    // Render Data Table & Refresh Plot
+    function updateTableAndGraph() {
+      const tbody = document.getElementById('dataTableBody');
+      tbody.innerHTML = '';
+      const graphData = [];
+
+      dataset.forEach(d => {
         const tr = document.createElement('tr');
+
+        const t1Str = d.t1 !== null ? d.t1.toFixed(2) : '-';
+        const t2Str = d.t2 !== null ? d.t2.toFixed(2) : '-';
+        const tStr = d.period !== null ? d.period.toFixed(3) : '-';
+        const t2SqStr = d.periodSq !== null ? d.periodSq.toFixed(4) : '-';
+
         tr.innerHTML = `
-            <td class="mass-val">${m}</td>
-            <td><input type="number" class="t1-input" step="0.1" placeholder="t1"></td>
-            <td><input type="number" class="t2-input" step="0.1" placeholder="t2"></td>
-            <td class="mean-time">-</td>
-            <td class="period">-</td>
-            <td class="period-sq">-</td>
-            <td><button onclick="autoFill(${m}, this)" style="padding: 4px 8px; font-size: 0.75rem;">Simulate Data</button></td>
+          <td>${d.massG}</td>
+          <td>${t1Str}</td>
+          <td>${t2Str}</td>
+          <td>${tStr}</td>
+          <td>${t2SqStr}</td>
         `;
+        tbody.appendChild(tr);
 
-        tr.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', () => calculateRow(tr));
-        });
+        if (d.periodSq !== null) {
+          graphData.push({ x: d.massG, y: d.periodSq });
+        }
+      });
 
-        tableBody.appendChild(tr);
+      // Update Plot Data
+      chart.data.datasets[0].data = graphData;
+      chart.update();
+    }
+
+    // Clear Table Data
+    clearTableBtn.addEventListener('click', () => {
+      dataset.forEach(d => {
+        d.t1 = null;
+        d.t2 = null;
+        d.period = null;
+        d.periodSq = null;
+      });
+      updateTableAndGraph();
     });
 
-    window.autoFill = function(mGrams, btn) {
-        const tr = btn.closest('tr');
-        const mKg = mGrams / 1000;
-        const theoreticalT = 2 * Math.PI * Math.sqrt(mKg / k);
-        const t50 = theoreticalT * 50;
-        
-        // Add minor human error (+/- 0.3s)
-        const t1 = (t50 + (Math.random() * 0.6 - 0.3)).toFixed(2);
-        const t2 = (t50 + (Math.random() * 0.6 - 0.3)).toFixed(2);
-
-        tr.querySelector('.t1-input').value = t1;
-        tr.querySelector('.t2-input').value = t2;
-        calculateRow(tr);
-    };
-</script>
-
+    // Initial Drawing Setup
+    drawApparatus(0);
+    updateTableAndGraph();
+  </script>
 </body>
 </html>
