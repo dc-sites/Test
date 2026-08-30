@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ඝූර්ණ මූලධර්මය - භෞතික විද්‍යා ප්‍රායෝගික සිමියුලේටරය</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --balanced-color: #16a34a;
+            --unbalanced-color: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Serif Sinhala', 'Abhaya Libre', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding: 12px;
+            font-size: 14px; /* Text overall size reduced */
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+            background: var(--card-bg);
+            padding: 14px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            font-size: 1.4rem; /* Small Header */
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .formula-box {
+            display: inline-block;
+            background-color: #eff6ff;
+            color: var(--primary-dark);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-top: 5px;
+            font-size: 0.85rem;
+        }
+
+        .canvas-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 14px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .status-badge.balanced {
+            background-color: var(--balanced-color);
+        }
+
+        .status-badge.unbalanced {
+            background-color: var(--unbalanced-color);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @media (min-width: 640px) {
+            .controls-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .control-card {
+            background: var(--card-bg);
+            padding: 14px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-top: 3px solid var(--primary);
+        }
+
+        .control-card h2 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 3px;
+        }
+
+        .input-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #cbd5e1;
+            outline: none;
+            accent-color: var(--primary);
+        }
+
+        .data-card {
+            background: var(--card-bg);
+            padding: 14px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-card h2 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .equation-display {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #f8fafc;
+            border-left: 3px solid var(--primary);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>ඝූර්ණ මූලධර්ම සිමියුලේටරය</h1>
+        <p class="subtitle">දණ්ඩ සමතුලිත කිරීමට ස්කන්ධ සහ දුරවල් වෙනස් කරන්න</p>
+        <div class="formula-box">m₀ · y = m · x</div>
+    </header>
+
+    <div class="canvas-card">
+        <div class="canvas-container">
+            <canvas id="simCanvas" width="800" height="280"></canvas>
+        </div>
+        <div id="statusBadge" class="status-badge balanced">පද්ධතිය සමතුලිතයි</div>
+    </div>
+
+    <div class="controls-grid">
+        <div class="control-card">
+            <h2>වම් පස භාරය (m₀)</h2>
+            <div class="input-group">
+                <label>
+                    <span>ස්කන්ධය (m₀):</span>
+                    <span id="m0Value">100 g</span>
+                </label>
+                <input type="range" id="m0Slider" min="10" max="500" step="10" value="100">
+            </div>
+            <div class="input-group">
+                <label>
+                    <span>දුර (y):</span>
+                    <span id="yValue">20.0 cm</span>
+                </label>
+                <input type="range" id="ySlider" min="1" max="40" step="0.5" value="20">
+            </div>
+        </div>
+
+        <div class="control-card">
+            <h2>දකුණු පස භාරය (m)</h2>
+            <div class="input-group">
+                <label>
+                    <span>ස්කන්ධය (m):</span>
+                    <span id="mValue">200 g</span>
+                </label>
+                <input type="range" id="mSlider" min="10" max="500" step="10" value="200">
+            </div>
+            <div class="input-group">
+                <label>
+                    <span>දුර (x):</span>
+                    <span id="xValue">10.0 cm</span>
+                </label>
+                <input type="range" id="xSlider" min="1" max="40" step="0.5" value="10">
+            </div>
+        </div>
+    </div>
+
+    <div class="data-card">
+        <h2>පරීක්ෂණ දත්ත සහ විශ්ලේෂණය</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>පාර්ශවය</th>
+                        <th>ස්කන්ධය (g)</th>
+                        <th>දුර (cm)</th>
+                        <th>ඝූර්ණය (g·cm)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>වම් පස (m₀, y)</strong></td>
+                        <td id="tableM0">100</td>
+                        <td id="tableY">20.0</td>
+                        <td id="tableLeftTorque">2000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>දකුණු පස (m, x)</strong></td>
+                        <td id="tableM">200</td>
+                        <td id="tableX">10.0</td>
+                        <td id="tableRightTorque">2000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="equation-display" id="equationDisplay">
+            100 g × 20.0 cm = 200 g × 10.0 cm (සමතුලිතයි)
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const m0Slider = document.getElementById('m0Slider');
+    const ySlider = document.getElementById('ySlider');
+    const mSlider = document.getElementById('mSlider');
+    const xSlider = document.getElementById('xSlider');
+
+    const m0Value = document.getElementById('m0Value');
+    const yValue = document.getElementById('yValue');
+    const mValue = document.getElementById('mValue');
+    const xValue = document.getElementById('xValue');
+
+    const tableM0 = document.getElementById('tableM0');
+    const tableY = document.getElementById('tableY');
+    const tableM = document.getElementById('tableM');
+    const tableX = document.getElementById('tableX');
+
+    const tableLeftTorque = document.getElementById('tableLeftTorque');
+    const tableRightTorque = document.getElementById('tableRightTorque');
+    const statusBadge = document.getElementById('statusBadge');
+    const equationDisplay = document.getElementById('equationDisplay');
+
+    function updateSimulation() {
+        const m0 = parseFloat(m0Slider.value);
+        const y = parseFloat(ySlider.value);
+        const m = parseFloat(mSlider.value);
+        const x = parseFloat(xSlider.value);
+
+        m0Value.textContent = `${m0} g`;
+        yValue.textContent = `${y.toFixed(1)} cm`;
+        mValue.textContent = `${m} g`;
+        xValue.textContent = `${x.toFixed(1)} cm`;
+
+        tableM0.textContent = m0;
+        tableY.textContent = y.toFixed(1);
+        tableM.textContent = m;
+        tableX.textContent = x.toFixed(1);
+
+        const leftTorque = m0 * y;
+        const rightTorque = m * x;
+
+        tableLeftTorque.textContent = Math.round(leftTorque);
+        tableRightTorque.textContent = Math.round(rightTorque);
+
+        const netTorque = rightTorque - leftTorque;
+        let angle = (netTorque / 10000) * (Math.PI / 6); 
+        const maxAngle = Math.PI / 12;
+        angle = Math.max(-maxAngle, Math.min(maxAngle, angle));
+
+        const isBalanced = Math.abs(leftTorque - rightTorque) < 1;
+
+        if (isBalanced) {
+            angle = 0;
+            statusBadge.textContent = "පද්ධතිය සමතුලිතයි";
+            statusBadge.className = "status-badge balanced";
+            equationDisplay.textContent = `${m0} g × ${y.toFixed(1)} cm = ${m} g × ${x.toFixed(1)} cm (සමතුලිතයි)`;
+        } else {
+            statusBadge.textContent = "පද්ධතිය අසමතුලිතයි";
+            statusBadge.className = "status-badge unbalanced";
+            equationDisplay.textContent = `${m0} g × ${y.toFixed(1)} cm ${leftTorque > rightTorque ? '>' : '<'} ${m} g × ${x.toFixed(1)} cm (අසමතුලිතයි)`;
+        }
+
+        drawBeam(angle, m0, y, m, x);
+    }
+
+    function drawBeam(angle, m0, y, m, x) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const pivotX = canvas.width / 2;
+        const pivotY = 180;
+        const beamWidth = 600;
+        const scale = 7;
+
+        ctx.beginPath();
+        ctx.moveTo(pivotX, pivotY);
+        ctx.lineTo(pivotX - 25, pivotY + 60);
+        ctx.lineTo(pivotX + 25, pivotY + 60);
+        ctx.closePath();
+        ctx.fillStyle = '#64748b';
+        ctx.fill();
+        ctx.strokeStyle = '#334155';
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(pivotX, pivotY);
+        ctx.rotate(angle);
+
+        ctx.fillStyle = '#d97706';
+        ctx.fillRect(-beamWidth / 2, -10, beamWidth, 20);
+        ctx.strokeStyle = '#92400e';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(-beamWidth / 2, -10, beamWidth, 20);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#78350f';
+        ctx.lineWidth = 1;
+
+        for (let i = -40; i <= 40; i += 5) {
+            const markX = i * scale;
+            const markHeight = i % 10 === 0 ? 8 : 4;
+            ctx.beginPath();
+            ctx.moveTo(markX, -10);
+            ctx.lineTo(markX, -10 + markHeight);
+            ctx.stroke();
+        }
+
+        const leftPosX = -y * scale;
+        drawWeight(leftPosX, 10, m0, '#ef4444', `m₀ (${m0}g)`);
+
+        const rightPosX = x * scale;
+        drawWeight(rightPosX, 10, m, '#3b82f6', `m (${m}g)`);
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#1e293b';
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    function drawWeight(x, y, mass, color, label) {
+        const size = Math.min(45, Math.max(25, 20 + mass / 20));
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x, y + 25);
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.fillRect(x - size / 2, y + 25, size, size);
+        ctx.strokeStyle = '#1e293b';
+        ctx.strokeRect(x - size / 2, y + 25, size, size);
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '11px "Noto Serif Sinhala", sans-serif'; // Reduced font size for canvas labels
+        ctx.textAlign = 'center';
+        ctx.fillText(label, x, y + 38 + size);
+    }
+
+    m0Slider.addEventListener('input', updateSimulation);
+    ySlider.addEventListener('input', updateSimulation);
+    mSlider.addEventListener('input', updateSimulation);
+    xSlider.addEventListener('input', updateSimulation);
+
+    updateSimulation();
+</script>
+
+</body>
+</html>
