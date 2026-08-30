@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>භෞතික විද්‍යා ප්‍රායෝගික පරීක්ෂණ අනුහුරුකාරකය | Physics Practical Simulator</title>
+    <!-- Sinhala Web Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --accent: #d97706;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans Sinhala', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+
+        /* Header Navigation */
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #0f172a);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--accent);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: var(--text-sub);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media(min-width: 992px) {
+            .container {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        /* Card Layout */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        /* Interactive Canvas Area */
+        .simulation-area {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background-color: #020617;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Controls Section */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media(min-width: 600px) {
+            .controls-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .control-group {
+            background: #0f172a;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary-light);
+            cursor: pointer;
+        }
+
+        .value-display {
+            font-weight: bold;
+            color: var(--accent);
+            float: right;
+        }
+
+        /* Information & Theory Styling */
+        .theory-list {
+            list-style-type: square;
+            padding-left: 20px;
+            color: var(--text-sub);
+            font-size: 0.95rem;
+        }
+
+        .theory-list li {
+            margin-bottom: 8px;
+        }
+
+        .formula-box {
+            background: #020617;
+            padding: 12px;
+            border-left: 4px solid var(--primary-light);
+            margin: 15px 0;
+            font-weight: 500;
+            color: #60a5fa;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* Data Table */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #0f172a;
+            color: var(--accent);
+        }
+
+        td {
+            background-color: var(--bg-card);
+        }
+
+        /* Status Indicator */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-balanced {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-unbalanced {
+            background: rgba(217, 119, 6, 0.2);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            margin-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>භෞතික විද්‍යා ප්‍රායෝගික පරීක්ෂණ අනුහුරුකාරකය</h1>
+        <p>A/L Physics Practical Simulator - Sinhala Medium</p>
+    </header>
+
+    <div class="container">
+        <!-- Main Simulation Area -->
+        <main>
+            <section class="card">
+                <h2 class="card-title">
+                    <span>⚖️</span> ඝූර්ණ මූලධර්මය ප්‍රායෝගික පරීක්ෂණය (Principle of Moments)
+                </h2>
+                
+                <div class="simulation-area">
+                    <canvas id="simCanvas"></canvas>
+                </div>
+
+                <div style="text-align: center;">
+                    <div id="statusBadge" class="status-badge status-balanced">
+                        සමතුලිතතාවය: සාර්ථකයි (Balanced)
+                    </div>
+                </div>
+
+                <!-- Simulation Controls -->
+                <div class="controls-grid">
+                    <!-- Left Weight -->
+                    <div class="control-group">
+                        <label>
+                            වම් පස ස්කන්ධය (m₁): <span id="m1Val" class="value-display">100 g</span>
+                        </label>
+                        <input type="range" id="m1" min="10" max="500" value="100" step="10">
+                        
+                        <label style="margin-top: 12px;">
+                            ආධාරකයේ සිට දුර (d₁): <span id="d1Val" class="value-display">20 cm</span>
+                        </label>
+                        <input type="range" id="d1" min="5" max="45" value="20" step="1">
+                    </div>
+
+                    <!-- Right Weight -->
+                    <div class="control-group">
+                        <label>
+                            දකුණු පස ස්කන්ධය (m₂): <span id="m2Val" class="value-display">200 g</span>
+                        </label>
+                        <input type="range" id="m2" min="10" max="500" value="200" step="10">
+                        
+                        <label style="margin-top: 12px;">
+                            ආධාරකයේ සිට දුර (d₂): <span id="d2Val" class="value-display">10 cm</span>
+                        </label>
+                        <input type="range" id="d2" min="5" max="45" value="10" step="1">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Observation Table -->
+            <section class="card" style="margin-top: 20px;">
+                <h3 class="card-title">📊 නිරීක්ෂණ සටහන (Observation Table)</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>පැත්ත</th>
+                                <th>ස්කන්ධය (m)</th>
+                                <th>බර / බලය (F = mg)</th>
+                                <th>දුර (d)</th>
+                                <th>ඝූර්ණය (Torque = F × d)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>වම් පස (Left)</td>
+                                <td><span id="t_m1">100</span> g</td>
+                                <td><span id="t_f1">0.98</span> N</td>
+                                <td><span id="t_d1">20</span> cm</td>
+                                <td><span id="t_t1">19.6</span> N·cm</td>
+                            </tr>
+                            <tr>
+                                <td>දකුණු පස (Right)</td>
+                                <td><span id="t_m2">200</span> g</td>
+                                <td><span id="t_f2">1.96</span> N</td>
+                                <td><span id="t_d2">10</span> cm</td>
+                                <td><span id="t_t2">19.6</span> N·cm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- Sidebar Theory & Guide -->
+        <aside>
+            <section class="card">
+                <h3 class="card-title">📖 සිද්ධාන්තය (Theory)</h3>
+                <p style="font-size: 0.9rem; color: var(--text-sub);">
+                    වස්තුවක් මත බල ක්‍රියා කරන විට එය සමතුලිතතාවයේ පවතී නම්, ඕනෑම ලක්ෂ්‍යයක් වටා වාමාවර්ත ඝූර්ණවල එකතුව දක්ෂිණාවර්ත ඝූර්ණවල එකතුවට සමාන වේ.
+                </p>
+
+                <div class="formula-box">
+                    වාමාවර්ත ඝූර්ණය = දක්ෂිණාවර්ත ඝූර්ණය<br>
+                    (m₁ × g) × d₁ = (m₂ × g) × d₂
+                </div>
+
+                <h3 class="card-title" style="margin-top: 15px;">💡 උපදෙස් (Instructions)</h3>
+                <ul class="theory-list">
+                    <li>ස්කන්ධ සහ දුර වෙනස් කිරීමට Slider භාවිත කරන්න.</li>
+                    <li>දණ්ඩ තිරස්ව පිහිටන විට පද්ධතිය සමතුලිත වේ.</li>
+                    <li>ඝූර්ණ සමාන වන අවස්ථා සටහන් කර ගන්න.</li>
+                </ul>
+            </section>
+        </aside>
+    </div>
+
+    <footer>
+        <p>© 2026 Physics Practical Simulator | උසස් පෙළ භෞතික විද්‍යා ප්‍රායෝගික පරීක්ෂණ අනුහුරුකාරකය</p>
+    </footer>
+
+    <!-- JavaScript Simulation Engine -->
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Inputs
+        const m1Input = document.getElementById('m1');
+        const d1Input = document.getElementById('d1');
+        const m2Input = document.getElementById('m2');
+        const d2Input = document.getElementById('d2');
+
+        // Text Displays
+        const m1Val = document.getElementById('m1Val');
+        const d1Val = document.getElementById('d1Val');
+        const m2Val = document.getElementById('m2Val');
+        const d2Val = document.getElementById('d2Val');
+        const statusBadge = document.getElementById('statusBadge');
+
+        // Table Elements
+        const t_m1 = document.getElementById('t_m1');
+        const t_f1 = document.getElementById('t_f1');
+        const t_d1 = document.getElementById('t_d1');
+        const t_t1 = document.getElementById('t_t1');
+
+        const t_m2 = document.getElementById('t_m2');
+        const t_f2 = document.getElementById('t_f2');
+        const t_d2 = document.getElementById('t_d2');
+        const t_t2 = document.getElementById('t_t2');
+
+        const g = 9.8; // Acceleration due to gravity
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function updateSimulation() {
+            const m1 = parseFloat(m1Input.value);
+            const d1 = parseFloat(d1Input.value);
+            const m2 = parseFloat(m2Input.value);
+            const d2 = parseFloat(d2Input.value);
+
+            // Update DOM text
+            m1Val.textContent = `${m1} g`;
+            d1Val.textContent = `${d1} cm`;
+            m2Val.textContent = `${m2} g`;
+            d2Val.textContent = `${d2} cm`;
+
+            // Calculations
+            const f1 = (m1 / 1000) * g; // Newton
+            const f2 = (m2 / 1000) * g;
+            const torque1 = f1 * d1; // N cm
+            const torque2 = f2 * d2;
+
+            // Update Table
+            t_m1.textContent = m1;
+            t_f1.textContent = f1.toFixed(2);
+            t_d1.textContent = d1;
+            t_t1.textContent = torque1.toFixed(1);
+
+            t_m2.textContent = m2;
+            t_f2.textContent = f2.toFixed(2);
+            t_d2.textContent = d2;
+            t_t2.textContent = torque2.toFixed(1);
+
+            // Calculate Angle of Tilt (Max tilt limited to +- 20 deg)
+            const diff = torque2 - torque1;
+            let angle = (diff / 20) * (Math.PI / 180);
+            const maxAngle = 20 * (Math.PI / 180);
+            if (angle > maxAngle) angle = maxAngle;
+            if (angle < -maxAngle) angle = -maxAngle;
+
+            // Status Badge Text
+            if (Math.abs(torque1 - torque2) < 0.5) {
+                statusBadge.textContent = "සමතුලිතතාවය: සාර්ථකයි (Balanced)";
+                statusBadge.className = "status-badge status-balanced";
+                angle = 0; // Lock to level if almost equal
+            } else {
+                statusBadge.textContent = "සමතුලිතතාවය: අසමතුලිතයි (Unbalanced)";
+                statusBadge.className = "status-badge status-unbalanced";
+            }
+
+            draw(angle, d1, m1, d2, m2);
+        }
+
+        function draw(angle, d1, m1, d2, m2) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2 + 30;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Scale factors for responsive drawing
+            const ruleLength = Math.min(width * 0.8, 500);
+            const pxPerCm = (ruleLength / 2) / 50;
+
+            // 1. Draw Fulcrum (ආධාරකය)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX - 20, centerY + 50);
+            ctx.lineTo(centerX + 20, centerY + 50);
+            ctx.closePath();
+            ctx.fillStyle = "#d97706";
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#ffffff";
+            ctx.stroke();
+
+            // 2. Draw Lever / Rule (දණ්ඩ)
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle);
+
+            // Main Ruler Body
+            ctx.fillStyle = "#e2e8f0";
+            ctx.fillRect(-ruleLength / 2, -10, ruleLength, 15);
+            ctx.strokeStyle = "#475569";
+            ctx.strokeRect(-ruleLength / 2, -10, ruleLength, 15);
+
+            // Ruler Markings
+            ctx.fillStyle = "#0f172a";
+            for (let i = -45; i <= 45; i += 5) {
+                const markX = i * pxPerCm;
+                const markHeight = (i % 10 === 0) ? 8 : 4;
+                ctx.fillRect(markX, -10, 1, markHeight);
+            }
+
+            // Left Weight (m1)
+            const x1 = -d1 * pxPerCm;
+            const size1 = Math.min(Math.max(m1 / 15, 12), 30);
+            ctx.fillStyle = "#3b82f6";
+            ctx.fillRect(x1 - size1 / 2, 5, size1, size1);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "10px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(`${m1}g`, x1, 18);
+
+            // Right Weight (m2)
+            const x2 = d2 * pxPerCm;
+            const size2 = Math.min(Math.max(m2 / 15, 12), 30);
+            ctx.fillStyle = "#ef4444";
+            ctx.fillRect(x2 - size2 / 2, 5, size2, size2);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "10px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(`${m2}g`, x2, 18);
+
+            ctx.restore();
+        }
+
+        // Event Listeners
+        [m1Input, d1Input, m2Input, d2Input].forEach(input => {
+            input.addEventListener('input', updateSimulation);
+        });
+
+        // Initial Run
+        updateSimulation();
+    </script>
+</body>
+</html>
