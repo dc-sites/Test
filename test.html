@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Physics Vernier Caliper Simulator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: manipulation;
+        }
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            margin: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 10px 0 5px 0;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        #simulator-container {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+        }
+        .canvas-wrapper {
+            width: 100%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: grab;
+            touch-action: none;
+            background-color: #fafafa;
+        }
+        canvas:active {
+            cursor: grabbing;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 280px;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        select, input[type="range"] {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: #fff;
+            font-size: 0.85rem;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 25px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+        button {
+            flex: 1 1 auto;
+            min-width: 90px;
+            padding: 9px 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.active-toggle {
+            background-color: #27ae60;
+        }
+        button.active-toggle:hover {
+            background-color: #219150;
+        }
+        button.help-btn {
+            background-color: #8e44ad;
+        }
+        button.help-btn:hover {
+            background-color: #732d91;
+        }
+        .readout {
+            margin-top: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background: #eef2f5;
+            padding: 10px 15px;
+            border-radius: 6px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* --- Guidance Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 15px;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.hidden {
+            display: none;
+            opacity: 0;
+        }
+        .modal-card {
+            background: white;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 100%;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-card h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #eef2f5;
+            padding-bottom: 8px;
+        }
+        .guide-list {
+            padding-left: 20px;
+            margin: 15px 0;
+            color: #444;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+        .guide-list li {
+            margin-bottom: 10px;
+        }
+        .modal-card button {
+            width: 100%;
+            padding: 12px;
+            background-color: #27ae60;
+            font-size: 0.95rem;
+        }
+        .modal-card button:hover {
+            background-color: #219150;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Vernier Caliper Simulator</h1>
+    <p>Interactive tool for learning precision measurements and reading alignment.</p>
+
+    <div id="simulator-container">
+        <div class="canvas-wrapper">
+            <canvas id="caliperCanvas" width="800" height="340"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="precisionSelect">Least Count:</label>
+                <select id="precisionSelect">
+                    <option value="0.1">0.1 mm (10 Div)</option>
+                    <option value="0.05" selected>0.05 mm (20 Div)</option>
+                    <option value="0.02">0.02 mm (50 Div)</option>
+                    <option value="0.5">0.5 mm (Coarse)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="positionSlider">Adjust:</label>
+                <input type="range" id="positionSlider" min="0" max="70" value="0" step="0.02">
+            </div>
+
+            <div class="btn-group">
+                <button id="zoomBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    Zoom Lens
+                </button>
+                <button id="zeroBtn">Reset Zero</button>
+                <button id="randomBtn">Random Object</button>
+                <button id="toggleReadoutBtn">Hide Reading</button>
+                <button id="guideBtn" class="help-btn">User Guide</button>
+            </div>
+        </div>
+
+        <div class="readout" id="readoutDisplay">
+            Reading: 0.00 mm (0.000 cm)
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="guideModal">
+        <div class="modal-card">
+            <h2>How to Use the Simulator</h2>
+            <ol class="guide-list">
+                <li><strong>Drag Jaws & Slider:</strong> Click/touch and drag the movable jaw directly or use the <em>Adjust</em> slider for fine placement.</li>
+                <li><strong>Set Least Count:</strong> Use the <em>Least Count</em> dropdown to select scale precision (0.1 mm, 0.05 mm, 0.02 mm, or 0.5 mm).</li>
+                <li><strong>Zoom Lens:</strong> Click <em>Zoom Lens</em> to reveal a dynamic magnifying glass that tracks Vernier scale alignments.</li>
+                <li><strong>Practice Mode:</strong> Click <em>Hide Reading</em> and <em>Random Object</em> to measure objects and test your scale reading skills.</li>
+            </ol>
+            <button id="closeGuideBtn">Got it, start measuring!</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('caliperCanvas');
+        const ctx = canvas.getContext('2d');
+        const slider = document.getElementById('positionSlider');
+        const precisionSelect = document.getElementById('precisionSelect');
+        const readout = document.getElementById('readoutDisplay');
+        const toggleBtn = document.getElementById('toggleReadoutBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const zeroBtn = document.getElementById('zeroBtn');
+        const zoomBtn = document.getElementById('zoomBtn');
+        const guideBtn = document.getElementById('guideBtn');
+        const guideModal = document.getElementById('guideModal');
+        const closeGuideBtn = document.getElementById('closeGuideBtn');
+
+        // State variables
+        let position = 0; 
+        let leastCount = 0.05; 
+        let showReading = true;
+        let showZoom = false;
+        let isDragging = false;
+        let objectWidth = 0;
+
+        // Base geometry configuration
+        const scaleFactor = 7; 
+        const originX = 130;
+        const mainBeamY = 150;
+        const beamHeight = 40;
+        const maxMM = 70;
+
+        function updateStepPrecision() {
+            leastCount = parseFloat(precisionSelect.value);
+            slider.step = leastCount;
+            // Round current position to nearest step matching new precision
+            position = Math.round(position / leastCount) * leastCount;
+            updateUI();
+        }
+
+        function drawCaliper() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const shiftX = position * scaleFactor;
+
+            // --- 1. DRAW FIXED PART (Main Scale & Fixed Jaws) ---
+            ctx.fillStyle = '#d0d7de';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1.5;
+
+            // Main Beam
+            ctx.fillRect(originX - 100, mainBeamY, 660, beamHeight);
+            ctx.strokeRect(originX - 100, mainBeamY, 660, beamHeight);
+
+            // Fixed Lower Jaw
+            ctx.beginPath();
+            ctx.moveTo(originX - 15, mainBeamY + beamHeight);
+            ctx.lineTo(originX - 15, mainBeamY + beamHeight + 110);
+            ctx.quadraticCurveTo(originX - 8, mainBeamY + beamHeight + 130, originX, mainBeamY + beamHeight + 130);
+            ctx.lineTo(originX, mainBeamY + beamHeight);
+            ctx.fillStyle = '#b0b8c0';
+            ctx.fill();
+            ctx.stroke();
+
+            // Fixed Upper Jaw
+            ctx.beginPath();
+            ctx.moveTo(originX - 15, mainBeamY);
+            ctx.lineTo(originX - 15, mainBeamY - 50);
+            ctx.quadraticCurveTo(originX - 8, mainBeamY - 60, originX, mainBeamY - 60);
+            ctx.lineTo(originX, mainBeamY);
+            ctx.fill();
+            ctx.stroke();
+
+            // --- Main Scale Markings (mm) ---
+            ctx.fillStyle = '#000';
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+
+            for (let mm = 0; mm <= maxMM; mm++) {
+                const x = originX + (mm * scaleFactor);
+                let markHeight = 8;
+
+                if (mm % 10 === 0) {
+                    markHeight = 18;
+                    ctx.fillText(mm / 10, x, mainBeamY + markHeight + 12);
+                } else if (mm % 5 === 0) {
+                    markHeight = 13;
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(x, mainBeamY + beamHeight);
+                ctx.lineTo(x, mainBeamY + beamHeight - markHeight);
+                ctx.stroke();
+            }
+
+            // --- 2. DRAW OBJECT ---
+            if (objectWidth > 0) {
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillRect(originX, mainBeamY + beamHeight + 5, objectWidth * scaleFactor, 115);
+                ctx.strokeStyle = '#c0392b';
+                ctx.strokeRect(originX, mainBeamY + beamHeight + 5, objectWidth * scaleFactor, 115);
+            }
+
+            // --- 3. DRAW MOVABLE PART (Vernier Scale & Sliding Jaws) ---
+            const vX = originX + shiftX;
+
+            // Depth Probe Rod
+            ctx.fillStyle = '#888';
+            ctx.fillRect(originX + (maxMM * scaleFactor) + 10, mainBeamY + (beamHeight / 2) - 2, shiftX + 20, 4);
+            ctx.strokeRect(originX + (maxMM * scaleFactor) + 10, mainBeamY + (beamHeight / 2) - 2, shiftX + 20, 4);
+
+            // Dynamic Vernier Slide Dimensions depending on division count
+            const totalDivisions = Math.round(1 / leastCount);
+            const divisionWidthMM = (totalDivisions - 1) / totalDivisions;
+            const vernierWidth = Math.max(85, (totalDivisions * divisionWidthMM * scaleFactor) + 20);
+
+            ctx.fillStyle = 'rgba(218, 225, 233, 0.92)';
+            ctx.fillRect(vX - 20, mainBeamY - 5, vernierWidth, beamHeight + 35);
+            ctx.strokeRect(vX - 20, mainBeamY - 5, vernierWidth, beamHeight + 35);
+
+            // Movable Lower Jaw
+            ctx.beginPath();
+            ctx.moveTo(vX, mainBeamY + beamHeight);
+            ctx.lineTo(vX, mainBeamY + beamHeight + 130);
+            ctx.quadraticCurveTo(vX - 8, mainBeamY + beamHeight + 130, vX - 15, mainBeamY + beamHeight + 110);
+            ctx.lineTo(vX - 15, mainBeamY + beamHeight);
+            ctx.fillStyle = '#c0c8d0';
+            ctx.fill();
+            ctx.stroke();
+
+            // Movable Upper Jaw
+            ctx.beginPath();
+            ctx.moveTo(vX, mainBeamY);
+            ctx.lineTo(vX, mainBeamY - 60);
+            ctx.quadraticCurveTo(vX - 8, mainBeamY - 60, vX - 15, mainBeamY - 50);
+            ctx.lineTo(vX - 15, mainBeamY);
+            ctx.fill();
+            ctx.stroke();
+
+            // Vernier Scale Markings
+            ctx.fillStyle = '#000';
+            ctx.font = '9px Arial';
+
+            for (let v = 0; v <= totalDivisions; v++) {
+                const vx = vX + (v * divisionWidthMM * scaleFactor);
+                let markHeight = 8;
+                if (v % 5 === 0 || v === totalDivisions) markHeight = 13;
+
+                ctx.beginPath();
+                ctx.moveTo(vx, mainBeamY + beamHeight);
+                ctx.lineTo(vx, mainBeamY + beamHeight + markHeight);
+                ctx.stroke();
+
+                if (v % (totalDivisions >= 20 ? 5 : 1) === 0) {
+                    let label = v;
+                    if (leastCount === 0.05) label = (v * 0.05).toFixed(2).replace('0.', '.');
+                    ctx.fillText(label, vx, mainBeamY + beamHeight + markHeight + 9);
+                }
+            }
+
+            // --- 4. DRAW MAGNIFYING LENS ---
+            if (showZoom) {
+                drawZoomLens(vX, mainBeamY + beamHeight, divisionWidthMM, totalDivisions);
+            }
+        }
+
+        function drawZoomLens(targetX, targetY, divisionWidthMM, totalDivisions) {
+            const zoomRadius = 68;
+            const magFactor = 2.2;
+            const lensX = 400; 
+            const lensY = 75;
+
+            ctx.save();
+
+            // Lens Frame Shadow & Border
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+            ctx.shadowBlur = 10;
+            ctx.beginPath();
+            ctx.arc(lensX, lensY, zoomRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.shadowBlur = 0; 
+
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#2980b9';
+            ctx.stroke();
+
+            // Clip magnified view inside lens
+            ctx.beginPath();
+            ctx.arc(lensX, lensY, zoomRadius - 2, 0, Math.PI * 2);
+            ctx.clip();
+
+            // Render Magnified Content centered over Vernier scale
+            ctx.save();
+            ctx.translate(lensX, lensY);
+            ctx.scale(magFactor, magFactor);
+            const scaleCenterOffset = (totalDivisions * divisionWidthMM * scaleFactor) / 2;
+            ctx.translate(-targetX - scaleCenterOffset, -targetY);
+
+            const shiftX = position * scaleFactor;
+            const vX = originX + shiftX;
+
+            // Main beam re-draw
+            ctx.fillStyle = '#d0d7de';
+            ctx.fillRect(originX - 100, mainBeamY, 660, beamHeight);
+            ctx.strokeRect(originX - 100, mainBeamY, 660, beamHeight);
+
+            ctx.fillStyle = '#000';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            for (let mm = 0; mm <= maxMM; mm++) {
+                const x = originX + (mm * scaleFactor);
+                let markHeight = 8;
+                if (mm % 10 === 0) {
+                    markHeight = 18;
+                    ctx.fillText(mm / 10, x, mainBeamY + markHeight + 10);
+                } else if (mm % 5 === 0) {
+                    markHeight = 13;
+                }
+                ctx.beginPath();
+                ctx.moveTo(x, mainBeamY + beamHeight);
+                ctx.lineTo(x, mainBeamY + beamHeight - markHeight);
+                ctx.stroke();
+            }
+
+            // Vernier slide background re-draw
+            const totalWidth = (totalDivisions * divisionWidthMM * scaleFactor);
+            ctx.fillStyle = 'rgba(218, 225, 233, 0.9)';
+            ctx.fillRect(vX - 20, mainBeamY + beamHeight - 1, totalWidth + 40, 30);
+            ctx.strokeRect(vX - 20, mainBeamY + beamHeight - 1, totalWidth + 40, 30);
+
+            // Vernier ticks re-draw
+            for (let v = 0; v <= totalDivisions; v++) {
+                const vx = vX + (v * divisionWidthMM * scaleFactor);
+                let markHeight = 8;
+                if (v % 5 === 0 || v === totalDivisions) markHeight = 13;
+
+                ctx.beginPath();
+                ctx.moveTo(vx, mainBeamY + beamHeight);
+                ctx.lineTo(vx, mainBeamY + beamHeight + markHeight);
+                ctx.stroke();
+
+                if (v % (totalDivisions >= 20 ? 5 : 1) === 0) {
+                    let label = v;
+                    if (leastCount === 0.05) label = (v * 0.05).toFixed(2).replace('0.', '.');
+                    ctx.fillText(label, vx, mainBeamY + beamHeight + markHeight + 9);
+                }
+            }
+            ctx.restore();
+
+            // Lens Alignment Guideline
+            ctx.strokeStyle = 'rgba(231, 76, 60, 0.75)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(lensX, lensY - zoomRadius);
+            ctx.lineTo(lensX, lensY + zoomRadius);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function updateUI() {
+            slider.value = position;
+            const decimals = leastCount === 0.02 ? 2 : (leastCount === 0.05 ? 2 : 1);
+            if (showReading) {
+                readout.textContent = `Reading: ${position.toFixed(decimals)} mm (${(position / 10).toFixed(decimals + 1)} cm)`;
+            } else {
+                readout.textContent = "Reading: ??? mm";
+            }
+            drawCaliper();
+        }
+
+        function getCanvasX(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+            return (clientX - rect.left) * (canvas.width / rect.width);
+        }
+
+        function startDrag(evt) {
+            const canvasX = getCanvasX(evt);
+            const slideX = originX + (position * scaleFactor);
+
+            if (canvasX >= slideX - 30 && canvasX <= slideX + 120) {
+                isDragging = true;
+                startX = canvasX - (position * scaleFactor);
+            }
+        }
+
+        function moveDrag(evt) {
+            if (!isDragging) return;
+            evt.preventDefault();
+            const canvasX = getCanvasX(evt);
+            let newPos = (canvasX - startX) / scaleFactor;
+            
+            newPos = Math.max(0, Math.min(maxMM, newPos));
+            position = Math.round(newPos / leastCount) * leastCount;
+            updateUI();
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+        // --- Event Listeners ---
+        precisionSelect.addEventListener('change', updateStepPrecision);
+
+        slider.addEventListener('input', (e) => {
+            position = parseFloat(e.target.value);
+            updateUI();
+        });
+
+        zoomBtn.addEventListener('click', () => {
+            showZoom = !showZoom;
+            zoomBtn.classList.toggle('active-toggle', showZoom);
+            updateUI();
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            showReading = !showReading;
+            toggleBtn.textContent = showReading ? "Hide Reading" : "Show Reading";
+            updateUI();
+        });
+
+        randomBtn.addEventListener('click', () => {
+            const rawWidth = Math.random() * (maxMM - 10) + 5;
+            objectWidth = Math.round(rawWidth / leastCount) * leastCount;
+            position = objectWidth;
+            updateUI();
+        });
+
+        zeroBtn.addEventListener('click', () => {
+            objectWidth = 0;
+            position = 0;
+            updateUI();
+        });
+
+        // Modal Controls
+        guideBtn.addEventListener('click', () => guideModal.classList.remove('hidden'));
+        closeGuideBtn.addEventListener('click', () => guideModal.classList.add('hidden'));
+
+        // Mouse Events
+        let startX = 0;
+        canvas.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', moveDrag);
+        window.addEventListener('mouseup', stopDrag);
+
+        // Touch Events
+        canvas.addEventListener('touchstart', startDrag, { passive: false });
+        window.addEventListener('touchmove', moveDrag, { passive: false });
+        window.addEventListener('touchend', stopDrag);
+
+        // Initial setup
+        updateStepPrecision();
+    </script>
+</body>
+</html>
