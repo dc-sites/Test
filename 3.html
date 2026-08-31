@@ -50,16 +50,17 @@
 
         <!-- Main Content Wrapper -->
         <div class="main-wrapper" id="mainWrapper">
-            <!-- Top Header Bar -->
+            <!-- Top Header Bar (Centered Title) -->
             <header class="top-header">
                 <div class="header-left">
                     <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn" title="Toggle Sidebar">
                         <i class="fa-solid fa-bars"></i>
                     </button>
-                    <div class="header-title">
-                        <h1>Principle of Moments</h1>
-                    </div>
                 </div>
+                <div class="header-title">
+                    <h1>Principle of Moments</h1>
+                </div>
+                <div class="header-right"></div>
             </header>
 
             <!-- Main Interactive Content Area -->
@@ -279,7 +280,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             const fulcrumX = canvas.width / 2;
-            const fulcrumY = 160;
+            const fulcrumY = 140;
             const scale = 8;
 
             // 1. Stand & Fulcrum (Dark Yellow)
@@ -363,18 +364,18 @@
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            ctx.lineTo(0, 40);
+            ctx.lineTo(0, 35);
             ctx.stroke();
 
             const size = 18 + Math.sqrt(mass) * 1.2;
             ctx.fillStyle = "#BDDED6";
             ctx.strokeStyle = "#177D81";
             ctx.lineWidth = 2;
-            ctx.fillRect(-size/2, 40, size, size);
-            ctx.strokeRect(-size/2, 40, size, size);
+            ctx.fillRect(-size/2, 35, size, size);
+            ctx.strokeRect(-size/2, 35, size, size);
 
-            const arrowStartY = 40 + size;
-            const arrowLength = 35;
+            const arrowStartY = 35 + size;
+            const arrowLength = 30;
             ctx.strokeStyle = "#dc2626";
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -384,16 +385,16 @@
 
             ctx.fillStyle = "#dc2626";
             ctx.beginPath();
-            ctx.moveTo(0, arrowStartY + arrowLength + 6);
-            ctx.lineTo(-5, arrowStartY + arrowLength);
-            ctx.lineTo(5, arrowStartY + arrowLength);
+            ctx.moveTo(0, arrowStartY + arrowLength + 5);
+            ctx.lineTo(-4, arrowStartY + arrowLength);
+            ctx.lineTo(4, arrowStartY + arrowLength);
             ctx.closePath();
             ctx.fill();
 
             ctx.fillStyle = "#0f2728";
             ctx.font = "italic 14px Inter, sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(label, 0, arrowStartY + arrowLength + 22);
+            ctx.fillText(label, 0, arrowStartY + arrowLength + 18);
 
             ctx.restore();
         }
