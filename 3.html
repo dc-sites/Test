@@ -58,7 +58,7 @@
                     </button>
                     <div class="header-title">
                         <h1>Principle of Moments</h1>
-                        <p>Interactive Virtual Laboratory (<i>m</i><sub>0</sub> · <i>y</i> = <i>m</i> · <i>x</i>)</p>
+                        <p class="header-subtitle">Interactive Virtual Laboratory (<i>m</i><sub>0</sub> · <i>y</i> = <i>m</i> · <i>x</i>)</p>
                     </div>
                 </div>
             </header>
@@ -164,13 +164,12 @@
             </main>
 
             <!-- Footer -->
-           <!-- Footer -->
-<footer class="footer">
-    <p>
-        Designed by 
-        <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a>
-    </p>
-</footer>
+            <footer class="footer">
+                <p>
+                    Designed by 
+                    <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a>
+                </p>
+            </footer>
         </div>
     </div>
 
@@ -274,7 +273,7 @@
             const scale = 8;
 
             // 1. Stand & Base
-            ctx.fillStyle = "#64748b";
+            ctx.fillStyle = "#177D81";
             ctx.beginPath();
             ctx.moveTo(fulcrumX, fulcrumY);
             ctx.lineTo(fulcrumX - 25, fulcrumY + 70);
@@ -282,7 +281,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = "#0f172a";
+            ctx.fillStyle = "#0f2728";
             ctx.fillRect(fulcrumX - 35, fulcrumY + 70, 70, 30);
             ctx.strokeStyle = "#ffffff";
             ctx.lineWidth = 1;
@@ -300,8 +299,8 @@
             // 2. Beam
             const beamLength = 700;
             const beamHeight = 12;
-            ctx.fillStyle = "#3b82f6";
-            ctx.strokeStyle = "#1d4ed8";
+            ctx.fillStyle = "#177D81";
+            ctx.strokeStyle = "#126367";
             ctx.lineWidth = 2;
             ctx.fillRect(-beamLength/2, -beamHeight/2, beamLength, beamHeight);
             ctx.strokeRect(-beamLength/2, -beamHeight/2, beamLength, beamHeight);
@@ -310,7 +309,7 @@
             const rightX = x * scale;
 
             // 3. Dimension Lines
-            ctx.strokeStyle = "#0284c7";
+            ctx.strokeStyle = "#177D81";
             ctx.lineWidth = 1.5;
 
             ctx.beginPath();
@@ -332,7 +331,7 @@
             ctx.moveTo(rightX, -30); ctx.lineTo(rightX, -20);
             ctx.stroke();
 
-            ctx.fillStyle = "#0f172a";
+            ctx.fillStyle = "#0f2728";
             ctx.font = "italic bold 15px Inter, sans-serif";
             ctx.textAlign = "center";
             ctx.fillText("y", leftX / 2, -32);
@@ -349,7 +348,7 @@
             ctx.save();
             ctx.translate(x, y);
 
-            ctx.strokeStyle = "#475569";
+            ctx.strokeStyle = "#0f2728";
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(0, 0);
@@ -357,8 +356,8 @@
             ctx.stroke();
 
             const size = 18 + Math.sqrt(mass) * 1.2;
-            ctx.fillStyle = "#94a3b8";
-            ctx.strokeStyle = "#334155";
+            ctx.fillStyle = "#BDDED6";
+            ctx.strokeStyle = "#177D81";
             ctx.lineWidth = 2;
             ctx.fillRect(-size/2, 40, size, size);
             ctx.strokeRect(-size/2, 40, size, size);
@@ -380,7 +379,7 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = "#0f172a";
+            ctx.fillStyle = "#0f2728";
             ctx.font = "italic 14px Inter, sans-serif";
             ctx.textAlign = "center";
             ctx.fillText(label, 0, arrowStartY + arrowLength + 22);
