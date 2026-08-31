@@ -3,237 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Determination of Density of a Liquid Simulator</title>
-    <style>
-        :root {
-            --primary: #007bb6;
-            --primary-dark: #005a87;
-            --bg: #f4f7f6;
-            --card-bg: #ffffff;
-            --text: #333;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 15px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 8px;
-        }
-
-        .container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        @media (min-width: 850px) {
-            .container {
-                grid-template-columns: 320px 1fr;
-            }
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 18px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .control-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-        }
-
-        input[type="number"], select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1em;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 5px;
-        }
-
-        button:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .sim-container {
-            position: relative;
-            width: 100%;
-            height: 480px;
-            background-color: #eef8fc;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            border: 1px solid #cce5ff;
-        }
-
-        canvas {
-            display: block;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .calc-box {
-            background: #eef7ee;
-            border: 1px solid #c3e6cb;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 0.95em;
-        }
-
-        .formula {
-            font-style: italic;
-            background: #f9f9f9;
-            padding: 8px;
-            border-left: 3px solid var(--primary);
-            margin: 8px 0;
-            font-family: "Courier New", Courier, monospace;
-        }
-    </style>
+    <title>Physics Lab: Density Determination Simulator</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <!-- External Stylesheet (Unchanged) -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h2>Density Determination using Floating Tube</h2>
-        <p>Simulation based on Principle of Floatation</p>
-    </header>
+    <div class="app-layout">
+        <!-- Mobile Overlay -->
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-    <div class="container">
-        <div class="sidebar">
-            <div class="card">
-                <h3>Apparatus Setup</h3>
-                <br>
-                <div class="control-group">
-                    <label for="liquidSelect">Select Liquid:</label>
-                    <select id="liquidSelect" onchange="resetExperiment()">
-                        <option value="1.00">Water (ρ ≈ 1.00 g/cm³)</option>
-                        <option value="1.15">Salt Solution (ρ ≈ 1.15 g/cm³)</option>
-                        <option value="0.80">Kerosene (ρ ≈ 0.80 g/cm³)</option>
-                        <option value="1.26">Glycerine Solution (ρ ≈ 1.26 g/cm³)</option>
-                    </select>
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <i class="fa-solid fa-flask-vial fa-lg"></i>
+                    <span>PhysicsLab</span>
                 </div>
-
-                <div class="control-group">
-                    <label for="diameter">Tube Outer Diameter, d (cm):</label>
-                    <input type="number" id="diameter" value="2.00" step="0.05" min="1.0" max="4.0" onchange="updateParameters()">
-                </div>
-
-                <div class="control-group">
-                    <label for="baseMass">Initial Tube Mass, M (g):</label>
-                    <input type="number" id="baseMass" value="35.0" step="0.5" onchange="updateParameters()">
-                </div>
-
-                <div class="control-group">
-                    <label for="waxVolume">Wax Volume, V (cm³):</label>
-                    <input type="number" id="waxVolume" value="8.0" step="0.5" onchange="updateParameters()">
-                </div>
+                <button class="toggle-btn" onclick="toggleSidebar()" title="Close Sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
+            <nav class="sidebar-nav">
+                <a href="3.html" class="nav-item">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <span>Moments Simulator</span>
+                </a>
+                <a href="6.html" class="nav-item active">
+                    <i class="fa-solid fa-vial"></i>
+                    <span>Liquid Density</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Lab Theory</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Data Reports</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
 
-            <div class="card">
-                <h3>Add Load Weights</h3>
-                <br>
-                <div class="control-group">
-                    <label for="addMass">Add Mass, m (g):</label>
-                    <input type="number" id="addMass" value="2.0" step="0.5" min="0">
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper" id="mainWrapper">
+            <!-- Top Header Bar -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn" title="Toggle Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
                 </div>
-                <button onclick="addDataPoint()">Add Mass & Record Reading</button>
-                <button onclick="resetExperiment()" style="background-color: #6c757d; margin-top: 8px;">Reset Data</button>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="card">
-                <div class="sim-container">
-                    <canvas id="simCanvas" width="400" height="480"></canvas>
+                <div class="header-title">
+                    <h1>Density Determination using Floating Tube</h1>
                 </div>
-            </div>
+                <div class="header-right"></div>
+            </header>
 
-            <div class="card">
-                <h3>Data Table (Table 9.1)</h3>
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th>Added Mass, m (g)</th>
-                            <th>Immersed Length, l (cm)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
-
-                <div class="calc-box" id="resultsBox">
-                    <strong>Calculations & Theory:</strong>
-                    <div class="formula">
-                        (M + m)g = (V + A · l) ρ g <br>
-                        l = [1 / (A · ρ)] m + [ (M/ρ - V) / A ]
+            <!-- Main Content Area -->
+            <main class="content-body">
+                <div class="container">
+                    
+                    <!-- Theory Card Box -->
+                    <div class="card theory-card">
+                        <h2 class="card-title">
+                            <i class="fa-solid fa-book-open"></i>
+                            Theory Overview
+                        </h2>
+                        <p class="theory-text">
+                            Simulation based on the Principle of Floatation for determining liquid density.
+                        </p>
                     </div>
-                    <p>Cross-sectional Area, <em>A</em> = π·d²/4 = <span id="areaVal">3.142</span> cm²</p>
-                    <p>Gradient of l vs m graph, <em>G</em> = 1 / (A · ρ)</p>
-                    <p><strong>Calculated Liquid Density (ρ):</strong> <span id="calcDensity">--</span> g/cm³</p>
+
+                    <!-- Simulator & Apparatus Controls Grid -->
+                    <div class="controls-grid">
+                        <!-- Apparatus Setup Card -->
+                        <div class="card">
+                            <h2 class="card-title">
+                                <i class="fa-solid fa-sliders"></i>
+                                Apparatus Setup
+                            </h2>
+                            <div class="control-group">
+                                <label for="liquidSelect">Select Liquid:</label>
+                                <select id="liquidSelect" onchange="resetExperiment()">
+                                    <option value="1.00">Water (ρ ≈ 1.00 g/cm³)</option>
+                                    <option value="1.15">Salt Solution (ρ ≈ 1.15 g/cm³)</option>
+                                    <option value="0.80">Kerosene (ρ ≈ 0.80 g/cm³)</option>
+                                    <option value="1.26">Glycerine Solution (ρ ≈ 1.26 g/cm³)</option>
+                                </select>
+                            </div>
+
+                            <div class="control-group">
+                                <label for="diameter">Tube Outer Diameter, d (cm):</label>
+                                <input type="number" id="diameter" value="2.00" step="0.05" min="1.0" max="4.0" onchange="updateParameters()">
+                            </div>
+
+                            <div class="control-group">
+                                <label for="baseMass">Initial Tube Mass, M (g):</label>
+                                <input type="number" id="baseMass" value="35.0" step="0.5" onchange="updateParameters()">
+                            </div>
+
+                            <div class="control-group">
+                                <label for="waxVolume">Wax Volume, V (cm³):</label>
+                                <input type="number" id="waxVolume" value="8.0" step="0.5" onchange="updateParameters()">
+                            </div>
+                        </div>
+
+                        <!-- Add Load Card -->
+                        <div class="card">
+                            <h2 class="card-title">
+                                <i class="fa-solid fa-weight-hanging"></i>
+                                Load Controls
+                            </h2>
+                            <div class="control-group">
+                                <label for="addMass">Add Mass, m (g):</label>
+                                <input type="number" id="addMass" value="2.0" step="0.5" min="0">
+                            </div>
+                            <button class="btn" onclick="addDataPoint()" style="margin-top: 10px;">
+                                <i class="fa-solid fa-plus"></i> Add Mass & Record
+                            </button>
+                            <button class="btn btn-secondary" onclick="resetExperiment()" style="margin-top: 10px;">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Simulation Card with Inline Reduced Dimensions -->
+                    <div class="card canvas-card">
+                        <canvas id="simCanvas" width="320" height="380" style="max-width: 320px; width: 100%; height: auto;"></canvas>
+                    </div>
+
+                    <!-- Data Table & Analysis Card -->
+                    <div class="card">
+                        <h2 class="card-title">
+                            <i class="fa-solid fa-table"></i>
+                            Data Table & Calculations
+                        </h2>
+                        <div class="table-responsive">
+                            <table class="data-table" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Added Mass, m (g)</th>
+                                        <th>Immersed Length, l (cm)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="equation-box" id="resultsBox">
+                            <strong>Calculations & Theory:</strong>
+                            <div class="formula">
+                                (M + m)g = (V + A · l) ρ g <br>
+                                l = [1 / (A · ρ)] m + [ (M/ρ - V) / A ]
+                            </div>
+                            <p>Cross-sectional Area, <em>A</em> = π·d²/4 = <span id="areaVal">3.142</span> cm²</p>
+                            <p>Gradient of l vs m graph, <em>G</em> = 1 / (A · ρ)</p>
+                            <p style="margin-top: 5px;"><strong>Calculated Liquid Density (ρ):</strong> <span id="calcDensity" class="value-tag">--</span> g/cm³</p>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>
+                    Designed by 
+                    <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a>
+                </p>
+            </footer>
         </div>
     </div>
 
     <script>
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainWrapper = document.getElementById('mainWrapper');
+            const overlay = document.getElementById('overlay');
+            
+            if (window.innerWidth <= 992) {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainWrapper.classList.toggle('expanded');
+            }
+        }
+
+        // Density Canvas Logic
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Experimental Variables
         let readings = [];
         
         function getParams() {
@@ -248,7 +218,6 @@
 
         function calculateLength(m, p) {
             const A = (Math.PI * Math.pow(p.d, 2)) / 4;
-            // Formula derived: l = ( (M + m)/rho - V ) / A
             let l = ((p.M + m) / p.rho - p.V) / A;
             return l > 0 ? l : 0;
         }
@@ -266,7 +235,6 @@
             const currentM = p.m;
             const l = calculateLength(currentM, p);
 
-            // Avoid duplicate entries for same mass
             if (!readings.some(r => r.m === currentM)) {
                 readings.push({ m: currentM, l: l });
                 readings.sort((a, b) => a.m - b.m);
@@ -298,7 +266,6 @@
                 return;
             }
 
-            // Linear regression to find gradient G = dl / dm
             let n = readings.length;
             let sumM = 0, sumL = 0, sumML = 0, sumM2 = 0;
 
@@ -313,9 +280,7 @@
             const p = getParams();
             const A = (Math.PI * Math.pow(p.d, 2)) / 4;
             
-            // rho = 1 / (A * G)
             let calculatedRho = 1 / (A * G);
-
             document.getElementById('calcDensity').innerText = calculatedRho.toFixed(3);
         }
 
@@ -326,80 +291,76 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Jar dimensions
-            const jarX = 120;
-            const jarY = 80;
-            const jarWidth = 160;
-            const jarHeight = 350;
-            const liquidLevel = 120;
+            const jarWidth = 130;
+            const jarHeight = 280;
+            const jarX = (canvas.width - jarWidth) / 2;
+            const jarY = 50;
+            const liquidLevel = 80;
 
-            // Draw Beaker / Jar
+            // Beaker / Jar
             ctx.fillStyle = "#e0f2fe";
             ctx.fillRect(jarX, liquidLevel, jarWidth, jarY + jarHeight - liquidLevel);
-            ctx.strokeStyle = "#0284c7";
+            ctx.strokeStyle = "#177D81";
             ctx.lineWidth = 3;
             ctx.strokeRect(jarX, jarY, jarWidth, jarHeight);
 
-            // Liquid Level surface line
+            // Liquid Level line
             ctx.beginPath();
             ctx.moveTo(jarX, liquidLevel);
             ctx.lineTo(jarX + jarWidth, liquidLevel);
-            ctx.strokeStyle = "#0284c7";
+            ctx.strokeStyle = "#177D81";
             ctx.lineWidth = 2;
             ctx.stroke();
 
-            // Tube dimensions scale
-            const scale = 12; // 1 cm = 12 pixels
-            const tubeWidth = p.d * 12;
+            // Tube scale calculations
+            const scale = 10; 
+            const tubeWidth = p.d * 10;
             const tubeX = canvas.width / 2 - tubeWidth / 2;
-            const tubeHeight = 260;
+            const tubeHeight = 210;
             
-            // Tube Position relative to immersion depth (l)
             const immersionPx = l * scale;
             const tubeY = liquidLevel + immersionPx - tubeHeight;
 
-            // Draw Floating Boiling Tube
-            // Round bottom (Wax & Lead shots)
+            // Tube Body
             ctx.beginPath();
-            ctx.fillStyle = "#a1a1aa"; // lead shots / wax
+            ctx.fillStyle = "#a1a1aa"; 
             ctx.arc(canvas.width / 2, tubeY + tubeHeight - tubeWidth/2, tubeWidth/2, 0, Math.PI);
             ctx.fill();
             ctx.stroke();
 
-            // Glass tube body
-            ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
             ctx.fillRect(tubeX, tubeY, tubeWidth, tubeHeight - tubeWidth/2);
             ctx.strokeRect(tubeX, tubeY, tubeWidth, tubeHeight - tubeWidth/2);
 
-            // Draw internal weights (m)
+            // Internal weights
             if (currentM > 0) {
                 ctx.fillStyle = "#3f3f46";
-                ctx.fillRect(canvas.width / 2 - 8, tubeY + tubeHeight - tubeWidth - 10, 16, 10);
+                ctx.fillRect(canvas.width / 2 - 6, tubeY + tubeHeight - tubeWidth - 8, 12, 8);
             }
 
-            // Draw Graduated Scale on the tube
-            ctx.fillStyle = "#000";
-            ctx.font = "10px sans-serif";
-            const totalScaleCm = Math.floor((tubeHeight - 20) / scale);
+            // Graduated Scale
+            ctx.fillStyle = "#0f2728";
+            ctx.font = "9px Inter, sans-serif";
+            const totalScaleCm = Math.floor((tubeHeight - 15) / scale);
 
             for (let i = 0; i <= totalScaleCm; i += 1) {
                 let markY = (tubeY + tubeHeight - tubeWidth/2) - (i * scale);
                 if (markY > tubeY && markY < tubeY + tubeHeight) {
                     ctx.beginPath();
                     ctx.moveTo(tubeX, markY);
-                    let markLength = (i % 5 === 0) ? 10 : 5;
+                    let markLength = (i % 5 === 0) ? 8 : 4;
                     ctx.lineTo(tubeX + markLength, markY);
                     ctx.stroke();
 
                     if (i % 2 === 0 && i > 0) {
-                        ctx.fillText(i.toString(), tubeX + 12, markY + 3);
+                        ctx.fillText(i.toString(), tubeX + 10, markY + 3);
                     }
                 }
             }
 
-            // Draw Dimension Arrow for l (immersed length)
+            // Dimension Arrow for immersed length (l)
             if (l > 0) {
-                const arrowX = tubeX - 25;
+                const arrowX = tubeX - 20;
                 ctx.beginPath();
                 ctx.moveTo(arrowX, liquidLevel);
                 ctx.lineTo(arrowX, liquidLevel + immersionPx);
@@ -407,9 +368,8 @@
                 ctx.lineWidth = 1.5;
                 ctx.stroke();
 
-                // Arrow heads
                 ctx.fillStyle = "#dc2626";
-                ctx.fillText(`l = ${l.toFixed(2)} cm`, arrowX - 65, liquidLevel + immersionPx / 2);
+                ctx.fillText(`l = ${l.toFixed(1)}`, arrowX - 45, liquidLevel + immersionPx / 2);
             }
         }
 
