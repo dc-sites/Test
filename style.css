@@ -5,7 +5,7 @@
     --accent-yellow: #D98E18;   /* Muted Amber Yellow */
     --teal-dark-hover: #126367; /* Dark Teal Hover State */
     --teal-subtle: #f0f7f5;     /* Tinted Light Background */
-    --footer-link-color: #0d9488; /* Distinct Teal Color for Footer Link */
+    --footer-link-color: #0d9488; /* Distinct Color for Footer Link */
     
     /* Neutral Theme Variables */
     --bg-main: #ffffff;
@@ -160,15 +160,23 @@ body {
     color: var(--teal-dark-hover);
 }
 
+.header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
 .header-title h1 {
     font-size: 1.25rem;
     color: var(--primary);
     font-weight: 700;
+    line-height: 1.2;
 }
 
-.header-title p {
+.header-subtitle {
     font-size: 0.85rem;
     color: var(--text-muted);
+    font-weight: 500;
 }
 
 /* Main Body & Layout */
