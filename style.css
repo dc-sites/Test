@@ -2,9 +2,10 @@
     /* Custom Palette Colors */
     --teal-dark: #177D81;       /* Dark Teal - Main Headers & Accents */
     --teal-light: #BDDED6;      /* Soft Teal - Light Borders & Inputs */
-    --accent-yellow: #D98E18;   /* Muted Amber Yellow - Softened Accent */
+    --accent-yellow: #D98E18;   /* Muted Amber Yellow */
     --teal-dark-hover: #126367; /* Dark Teal Hover State */
     --teal-subtle: #f0f7f5;     /* Tinted Light Background */
+    --footer-link-color: #0d9488; /* Distinct Teal Color for Footer Link */
     
     /* Neutral Theme Variables */
     --bg-main: #ffffff;
@@ -336,11 +337,6 @@ input[type="range"] {
     line-height: 1.5;
 }
 
-/* Minimalist Yellow Accent Utility */
-.highlight-yellow {
-    color: var(--accent-yellow);
-}
-
 /* Footer Styling */
 .footer {
     background: #ffffff;
@@ -356,7 +352,19 @@ input[type="range"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
+}
+
+.footer-link {
+    color: var(--footer-link-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.footer-link:hover {
+    color: var(--teal-dark-hover);
+    text-decoration: underline;
 }
 
 /* Mobile & Overlay Breakpoints */
