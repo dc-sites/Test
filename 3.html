@@ -58,7 +58,6 @@
                     </button>
                     <div class="header-title">
                         <h1>Principle of Moments</h1>
-                        <p class="header-subtitle">Interactive Virtual Laboratory (<i>m</i><sub>0</sub> · <i>y</i> = <i>m</i> · <i>x</i>)</p>
                     </div>
                 </div>
             </header>
@@ -67,6 +66,17 @@
             <main class="content-body">
                 <div class="container">
                     
+                    <!-- Theory Card Box -->
+                    <div class="card theory-card">
+                        <h2 class="card-title">
+                            <i class="fa-solid fa-book-open"></i>
+                            Theory
+                        </h2>
+                        <p class="theory-text">
+                            Interactive Virtual Laboratory (<i>m</i><sub>0</sub> · <i>y</i> = <i>m</i> · <i>x</i>)
+                        </p>
+                    </div>
+
                     <!-- Canvas Simulation Card -->
                     <div class="card canvas-card">
                         <canvas id="simCanvas" width="800" height="280"></canvas>
@@ -272,8 +282,8 @@
             const fulcrumY = 160;
             const scale = 8;
 
-            // 1. Stand & Base
-            ctx.fillStyle = "#177D81";
+            // 1. Stand & Fulcrum (Dark Yellow)
+            ctx.fillStyle = "#D98E18"; 
             ctx.beginPath();
             ctx.moveTo(fulcrumX, fulcrumY);
             ctx.lineTo(fulcrumX - 25, fulcrumY + 70);
@@ -281,6 +291,7 @@
             ctx.closePath();
             ctx.fill();
 
+            // Base
             ctx.fillStyle = "#0f2728";
             ctx.fillRect(fulcrumX - 35, fulcrumY + 70, 70, 30);
             ctx.strokeStyle = "#ffffff";
