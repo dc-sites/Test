@@ -1,5 +1,5 @@
+/* Custom Palette Colors */
 :root {
-    /* Custom Palette Colors */
     --teal-dark: #177D81;       /* Dark Teal - Main Headers & Accents */
     --teal-light: #BDDED6;      /* Soft Teal - Light Borders & Inputs */
     --accent-yellow: #D98E18;   /* Dark Yellow / Amber */
@@ -215,7 +215,6 @@ canvas {
     width: 100%;
     max-width: 800px;
     height: auto;
-    max-height: 300px;
     touch-action: none;
 }
 
@@ -284,6 +283,51 @@ input[type="range"] {
     cursor: pointer;
 }
 
+/* Input & Select Controls for 6.html */
+input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95em;
+    color: var(--text-main);
+    background-color: var(--bg-card);
+    outline: none;
+}
+
+input[type="number"]:focus, select:focus {
+    border-color: var(--teal-dark);
+}
+
+.btn {
+    width: 100%;
+    padding: 10px 16px;
+    background-color: var(--teal-dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn:hover {
+    background-color: var(--teal-dark-hover);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
 /* Data Table */
 .table-responsive {
     overflow-x: auto;
@@ -311,7 +355,7 @@ input[type="range"] {
     color: var(--text-main);
 }
 
-/* Status Indicators - Margined Down to avoid simulator labels */
+/* Status Indicators */
 .status-badge {
     display: inline-flex;
     align-items: center;
@@ -345,6 +389,16 @@ input[type="range"] {
     margin-top: 16px;
     border-radius: 0 8px 8px 0;
     line-height: 1.5;
+}
+
+.formula {
+    font-style: italic;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px dashed var(--border-color);
+    margin: 10px 0;
+    font-family: monospace;
 }
 
 /* Footer Styling */
@@ -464,7 +518,6 @@ input[type="range"] {
     }
 
     canvas {
-        max-height: none;
         height: auto;
         width: 100%;
         display: block;
