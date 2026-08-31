@@ -4,230 +4,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Physics Lab: Principle of Moments Simulator</title>
-    <style>
-        :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --primary: #2c3e50;
-            --accent: #2980b9;
-            --border: #dcdde1;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--primary);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 15px;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        header p {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 900px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .canvas-card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-            text-align: center;
-        }
-
-        canvas {
-            width: 100%;
-            height: auto;
-            max-height: 320px;
-            background-color: #fff;
-            touch-action: none;
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        @media (min-width: 600px) {
-            .controls-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border: 1px solid var(--border);
-        }
-
-        .card h2 {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            border-bottom: 2px solid var(--bg-color);
-            padding-bottom: 5px;
-        }
-
-        .control-group {
-            margin-bottom: 12px;
-        }
-
-        .control-group label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: #e0e0e0;
-            outline: none;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-
-        .data-table th, .data-table td {
-            border: 1px solid var(--border);
-            padding: 6px;
-            text-align: center;
-        }
-
-        .data-table th {
-            background-color: var(--bg-color);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
-        .status-balanced { background-color: #e1f7d5; color: #2e7d32; }
-        .status-unbalanced { background-color: #ffebee; color: #c62828; }
-
-        .equation-box {
-            background-color: #f8f9fa;
-            border-left: 4px solid var(--accent);
-            padding: 8px 12px;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 0.9rem;
-            margin-top: 8px;
-        }
-    </style>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header>
-        <h1>Principle of Moments Simulator</h1>
-        <p>Adjust masses and distances to balance the beam ($m_0 \cdot y = m \cdot x$)</p>
-    </header>
+    <div class="app-layout">
+        <!-- Mobile Overlay -->
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
-    <div class="container">
-        <div class="canvas-card">
-            <canvas id="simCanvas" width="800" height="280"></canvas>
-            <div id="statusBadge" class="status-badge status-balanced">System Balanced</div>
-        </div>
-
-        <div class="controls-grid">
-            <div class="card">
-                <h2>Left Load ($m_0$)</h2>
-                <div class="control-group">
-                    <label>Mass ($m_0$): <span id="m0-val">100</span> g</label>
-                    <input type="range" id="m0-slider" min="10" max="500" step="5" value="100">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <i class="fa-solid fa-flask-vial fa-lg"></i>
+                    <span>PhysicsLab</span>
                 </div>
-                <div class="control-group">
-                    <label>Distance ($y$): <span id="y-val">20.0</span> cm</label>
-                    <input type="range" id="y-slider" min="2" max="40" step="0.5" value="20">
-                </div>
+                <button class="toggle-btn" onclick="toggleSidebar()" title="Close Sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <span>Moments Simulator</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Lab Theory</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Data Reports</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
 
-            <div class="card">
-                <h2>Right Load ($m$)</h2>
-                <div class="control-group">
-                    <label>Mass ($m$): <span id="m-val">200</span> g</label>
-                    <input type="range" id="m-slider" min="10" max="500" step="5" value="200">
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper" id="mainWrapper">
+            <!-- Top Header Bar -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn" title="Toggle Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-title">
+                        <h1>Principle of Moments</h1>
+                        <p>Interactive Virtual Laboratory (<i>m</i><sub>0</sub> · <i>y</i> = <i>m</i> · <i>x</i>)</p>
+                    </div>
                 </div>
-                <div class="control-group">
-                    <label>Distance ($x$): <span id="x-val">10.0</span> cm</label>
-                    <input type="range" id="x-slider" min="2" max="40" step="0.5" value="10">
-                </div>
-            </div>
-        </div>
+            </header>
 
-        <div class="card">
-            <h2>Experimental Data & Analysis</h2>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Side</th>
-                        <th>Mass (g)</th>
-                        <th>Distance (cm)</th>
-                        <th>Torque / Moment (g·cm)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Left ($m_0, y$)</strong></td>
-                        <td id="table-m0">100</td>
-                        <td id="table-y">20.0</td>
-                        <td id="table-left-torque">2000</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Right ($m, x$)</strong></td>
-                        <td id="table-m">200</td>
-                        <td id="table-x">10.0</td>
-                        <td id="table-right-torque">2000</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="equation-box" id="calc-expression">
-                100 g × 20.0 cm = 200 g × 10.0 cm (Balanced)
-            </div>
+            <!-- Main Interactive Content Area -->
+            <main class="content-body">
+                <div class="container">
+                    
+                    <!-- Canvas Simulation Card -->
+                    <div class="card canvas-card">
+                        <canvas id="simCanvas" width="800" height="280"></canvas>
+                        <div id="statusBadge" class="status-badge status-balanced">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span id="statusText">System Balanced</span>
+                        </div>
+                    </div>
+
+                    <!-- Controls Grid -->
+                    <div class="controls-grid">
+                        <!-- Left Load Card -->
+                        <div class="card">
+                            <h2 class="card-title">
+                                <i class="fa-solid fa-weight-hanging"></i>
+                                Left Load (<i>m</i><sub>0</sub>)
+                            </h2>
+                            <div class="control-group">
+                                <label>
+                                    Mass (<i>m</i><sub>0</sub>)
+                                    <span class="value-tag"><span id="m0-val">100</span> g</span>
+                                </label>
+                                <input type="range" id="m0-slider" min="10" max="500" step="5" value="100">
+                            </div>
+                            <div class="control-group">
+                                <label>
+                                    Distance (<i>y</i>)
+                                    <span class="value-tag"><span id="y-val">20.0</span> cm</span>
+                                </label>
+                                <input type="range" id="y-slider" min="2" max="40" step="0.5" value="20">
+                            </div>
+                        </div>
+
+                        <!-- Right Load Card -->
+                        <div class="card">
+                            <h2 class="card-title">
+                                <i class="fa-solid fa-weight-hanging"></i>
+                                Right Load (<i>m</i>)
+                            </h2>
+                            <div class="control-group">
+                                <label>
+                                    Mass (<i>m</i>)
+                                    <span class="value-tag"><span id="m-val">200</span> g</span>
+                                </label>
+                                <input type="range" id="m-slider" min="10" max="500" step="5" value="200">
+                            </div>
+                            <div class="control-group">
+                                <label>
+                                    Distance (<i>x</i>)
+                                    <span class="value-tag"><span id="x-val">10.0</span> cm</span>
+                                </label>
+                                <input type="range" id="x-slider" min="2" max="40" step="0.5" value="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis and Table Card -->
+                    <div class="card">
+                        <h2 class="card-title">
+                            <i class="fa-solid fa-table"></i>
+                            Experimental Data & Analysis
+                        </h2>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Side</th>
+                                        <th>Mass (g)</th>
+                                        <th>Distance (cm)</th>
+                                        <th>Torque / Moment (g·cm)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Left (<i>m</i><sub>0</sub>, <i>y</i>)</strong></td>
+                                        <td id="table-m0">100</td>
+                                        <td id="table-y">20.0</td>
+                                        <td id="table-left-torque">2000</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Right (<i>m</i>, <i>x</i>)</strong></td>
+                                        <td id="table-m">200</td>
+                                        <td id="table-x">10.0</td>
+                                        <td id="table-right-torque">2000</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="equation-box" id="calc-expression">
+                            100 g × 20.0 cm = 200 g × 10.0 cm (Balanced)
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>
+                    <i class="fa-regular fa-copyright"></i> 
+                    Physics Virtual Lab Simulator. Designed for clean scientific interactivity.
+                </p>
+            </footer>
         </div>
     </div>
 
     <script>
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainWrapper = document.getElementById('mainWrapper');
+            const overlay = document.getElementById('overlay');
+            
+            if (window.innerWidth <= 992) {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                mainWrapper.classList.toggle('expanded');
+            }
+        }
+
+        // Simulator Logic
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -250,10 +212,8 @@
         const tableLeftTorque = document.getElementById('table-left-torque');
         const tableRightTorque = document.getElementById('table-right-torque');
 
-        const statusBadge = document.getElementById('status-badge');
         const calcExpression = document.getElementById('calc-expression');
 
-        // Animation Variable
         let currentAngle = 0;
 
         function updateValues() {
@@ -282,21 +242,23 @@
             const isBalanced = Math.abs(diff) < 1;
 
             const badge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+
             if (isBalanced) {
-                badge.textContent = "System Balanced (Equilibrium)";
                 badge.className = "status-badge status-balanced";
-                calcExpression.textContent = `${m0} g × ${y.toFixed(1)} cm = ${m} g × ${x.toFixed(1)} cm`;
+                badge.querySelector('i').className = "fa-solid fa-circle-check";
+                statusText.textContent = "System Balanced (Equilibrium)";
+                calcExpression.innerHTML = `<strong>Left Moment:</strong> ${m0} g × ${y.toFixed(1)} cm = <strong>${leftTorque.toFixed(0)} g·cm</strong> &nbsp;≡&nbsp; <strong>Right Moment:</strong> ${m} g × ${x.toFixed(1)} cm = <strong>${rightTorque.toFixed(0)} g·cm</strong>`;
             } else {
-                badge.textContent = diff > 0 ? "Tilted Left (Anti-Clockwise)" : "Tilted Right (Clockwise)";
                 badge.className = "status-badge status-unbalanced";
-                calcExpression.textContent = `${leftTorque.toFixed(0)} g·cm ${diff > 0 ? '>' : '<'} ${rightTorque.toFixed(0)} g·cm`;
+                badge.querySelector('i').className = "fa-solid fa-circle-exclamation";
+                statusText.textContent = diff > 0 ? "Tilted Left (Anti-Clockwise)" : "Tilted Right (Clockwise)";
+                calcExpression.innerHTML = `<strong>Left Moment:</strong> ${leftTorque.toFixed(0)} g·cm &nbsp;${diff > 0 ? '&gt;' : '&lt;'}&nbsp; <strong>Right Moment:</strong> ${rightTorque.toFixed(0)} g·cm`;
             }
 
-            // Target angle bound between -15 and +15 degrees
             let targetAngle = (rightTorque - leftTorque) / 2000;
             targetAngle = Math.max(-0.25, Math.min(0.25, targetAngle));
 
-            // Smooth transition for balance beam animation
             currentAngle += (targetAngle - currentAngle) * 0.1;
 
             drawSimulation(m0, y, m, x, currentAngle);
@@ -308,10 +270,10 @@
 
             const fulcrumX = canvas.width / 2;
             const fulcrumY = 160;
-            const scale = 8; // Pixels per cm
+            const scale = 8;
 
-            // 1. Draw Stand & Fulcrum Base
-            ctx.fillStyle = "#7f8c8d";
+            // 1. Stand & Base
+            ctx.fillStyle = "#64748b";
             ctx.beginPath();
             ctx.moveTo(fulcrumX, fulcrumY);
             ctx.lineTo(fulcrumX - 25, fulcrumY + 70);
@@ -319,9 +281,8 @@
             ctx.closePath();
             ctx.fill();
 
-            ctx.fillStyle = "#2c3e50";
+            ctx.fillStyle = "#0f172a";
             ctx.fillRect(fulcrumX - 35, fulcrumY + 70, 70, 30);
-            // Hatch lines on base
             ctx.strokeStyle = "#ffffff";
             ctx.lineWidth = 1;
             for(let i = -30; i < 30; i += 10) {
@@ -331,58 +292,52 @@
                 ctx.stroke();
             }
 
-            // Rotated context for lever beam
             ctx.save();
             ctx.translate(fulcrumX, fulcrumY);
             ctx.rotate(angle);
 
-            // 2. Draw Beam
+            // 2. Beam
             const beamLength = 700;
             const beamHeight = 12;
-            ctx.fillStyle = "#f39c12";
-            ctx.strokeStyle = "#d35400";
+            ctx.fillStyle = "#3b82f6";
+            ctx.strokeStyle = "#1d4ed8";
             ctx.lineWidth = 2;
             ctx.fillRect(-beamLength/2, -beamHeight/2, beamLength, beamHeight);
             ctx.strokeRect(-beamLength/2, -beamHeight/2, beamLength, beamHeight);
 
-            // Left load attach point
             const leftX = -y * scale;
-            // Right load attach point
             const rightX = x * scale;
 
-            // 3. Draw Dimension Lines & Text (y and x)
-            ctx.strokeStyle = "#2980b9";
+            // 3. Dimension Lines
+            ctx.strokeStyle = "#0284c7";
             ctx.lineWidth = 1.5;
 
-            // y Dimension
             ctx.beginPath();
             ctx.moveTo(leftX, -25);
             ctx.lineTo(0, -25);
             ctx.stroke();
-            // End ticks
+
             ctx.beginPath();
             ctx.moveTo(leftX, -30); ctx.lineTo(leftX, -20);
             ctx.moveTo(0, -30); ctx.lineTo(0, -20);
             ctx.stroke();
 
-            // x Dimension
             ctx.beginPath();
             ctx.moveTo(0, -25);
             ctx.lineTo(rightX, -25);
             ctx.stroke();
-            // End ticks
+
             ctx.beginPath();
             ctx.moveTo(rightX, -30); ctx.lineTo(rightX, -20);
             ctx.stroke();
 
-            // Dimension labels
-            ctx.fillStyle = "#2c3e50";
-            ctx.font = "italic bold 16px sans-serif";
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "italic bold 15px Inter, sans-serif";
             ctx.textAlign = "center";
             ctx.fillText("y", leftX / 2, -32);
             ctx.fillText("x", rightX / 2, -32);
 
-            // 4. Draw Weights and Forces (Un-rotate vector text/mass for vertical alignment)
+            // 4. Weights
             drawMass(leftX, beamHeight/2, m0, "m₀g");
             drawMass(rightX, beamHeight/2, m, "mg");
 
@@ -393,34 +348,30 @@
             ctx.save();
             ctx.translate(x, y);
 
-            // String line
-            ctx.strokeStyle = "#333";
+            ctx.strokeStyle = "#475569";
             ctx.lineWidth = 1.5;
             ctx.beginPath();
             ctx.moveTo(0, 0);
             ctx.lineTo(0, 40);
             ctx.stroke();
 
-            // Weight Object
             const size = 18 + Math.sqrt(mass) * 1.2;
-            ctx.fillStyle = "#7f8c8d";
-            ctx.strokeStyle = "#2c3e50";
+            ctx.fillStyle = "#94a3b8";
+            ctx.strokeStyle = "#334155";
             ctx.lineWidth = 2;
             ctx.fillRect(-size/2, 40, size, size);
             ctx.strokeRect(-size/2, 40, size, size);
 
-            // Force Arrow Line
             const arrowStartY = 40 + size;
             const arrowLength = 35;
-            ctx.strokeStyle = "#c62828";
+            ctx.strokeStyle = "#dc2626";
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(0, arrowStartY);
             ctx.lineTo(0, arrowStartY + arrowLength);
             ctx.stroke();
 
-            // Arrow Head
-            ctx.fillStyle = "#c62828";
+            ctx.fillStyle = "#dc2626";
             ctx.beginPath();
             ctx.moveTo(0, arrowStartY + arrowLength + 6);
             ctx.lineTo(-5, arrowStartY + arrowLength);
@@ -428,16 +379,14 @@
             ctx.closePath();
             ctx.fill();
 
-            // Label text
-            ctx.fillStyle = "#000";
-            ctx.font = "italic 15px sans-serif";
+            ctx.fillStyle = "#0f172a";
+            ctx.font = "italic 14px Inter, sans-serif";
             ctx.textAlign = "center";
             ctx.fillText(label, 0, arrowStartY + arrowLength + 22);
 
             ctx.restore();
         }
 
-        // Initialize Loop
         updateValues();
     </script>
 </body>
