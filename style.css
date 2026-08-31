@@ -2,7 +2,7 @@
     /* Custom Palette Colors */
     --teal-dark: #177D81;       /* Dark Teal - Main Headers & Accents */
     --teal-light: #BDDED6;      /* Soft Teal - Light Borders & Inputs */
-    --accent-yellow: #D98E18;   /* Muted Amber Yellow */
+    --accent-yellow: #D98E18;   /* Dark Yellow / Amber */
     --teal-dark-hover: #126367; /* Dark Teal Hover State */
     --teal-subtle: #f0f7f5;     /* Tinted Light Background */
     --footer-link-color: #0d9488; /* Distinct Color for Footer Link */
@@ -160,23 +160,10 @@ body {
     color: var(--teal-dark-hover);
 }
 
-.header-title {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
 .header-title h1 {
     font-size: 1.25rem;
     color: var(--primary);
     font-weight: 700;
-    line-height: 1.2;
-}
-
-.header-subtitle {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-weight: 500;
 }
 
 /* Main Body & Layout */
@@ -194,6 +181,7 @@ body {
     gap: 20px;
 }
 
+/* Cards & Layout */
 .card {
     background: #ffffff;
     border: 1px solid var(--border-color);
@@ -202,11 +190,22 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
+.theory-card {
+    background: #ffffff;
+}
+
+.theory-text {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
 .canvas-card {
     display: flex;
     flex-direction: column;
     align-items: center;
     background: #ffffff;
+    padding: 16px;
 }
 
 canvas {
@@ -375,7 +374,7 @@ input[type="range"] {
     text-decoration: underline;
 }
 
-/* Mobile & Overlay Breakpoints */
+/* Mobile Responsive Optimization */
 @media (max-width: 992px) {
     .sidebar {
         transform: translateX(-100%);
@@ -398,6 +397,76 @@ input[type="range"] {
     }
 
     .overlay.active {
+        display: block;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Padding Reductions */
+    .content-body {
+        padding: 12px;
+    }
+
+    .container {
+        gap: 12px;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    /* Font Size Reductions for Mobile */
+    .header-title h1 {
+        font-size: 1.05rem;
+    }
+
+    .card-title {
+        font-size: 0.875rem;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+    }
+
+    .theory-text {
+        font-size: 0.825rem;
+    }
+
+    .control-group label {
+        font-size: 0.775rem;
+    }
+
+    .value-tag {
+        font-size: 0.75rem;
+        padding: 1px 6px;
+    }
+
+    .data-table {
+        font-size: 0.775rem;
+    }
+
+    .data-table th, .data-table td {
+        padding: 8px 6px;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 4px 12px;
+        margin-top: 8px;
+    }
+
+    .equation-box {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+
+    /* Canvas Size Optimization for Mobile */
+    .canvas-card {
+        padding: 8px 4px;
+    }
+
+    canvas {
+        max-height: none;
+        height: auto;
+        width: 100%;
         display: block;
     }
 }
