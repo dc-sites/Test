@@ -120,14 +120,14 @@ body {
     margin-left: 0;
 }
 
-/* Header Navbar */
+/* Header Navbar - Centered Header Title */
 .top-header {
     height: 70px;
     background: #ffffff;
     border-bottom: 1px solid var(--border-color);
-    display: flex;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
     align-items: center;
-    justify-content: space-between;
     padding: 0 24px;
     position: sticky;
     top: 0;
@@ -137,7 +137,6 @@ body {
 .header-left {
     display: flex;
     align-items: center;
-    gap: 16px;
 }
 
 .toggle-btn {
@@ -158,6 +157,10 @@ body {
 .toggle-btn:hover {
     background-color: var(--teal-subtle);
     color: var(--teal-dark-hover);
+}
+
+.header-title {
+    text-align: center;
 }
 
 .header-title h1 {
@@ -205,14 +208,14 @@ body {
     flex-direction: column;
     align-items: center;
     background: #ffffff;
-    padding: 16px;
+    padding: 20px 16px 24px 16px;
 }
 
 canvas {
     width: 100%;
     max-width: 800px;
     height: auto;
-    max-height: 320px;
+    max-height: 300px;
     touch-action: none;
 }
 
@@ -308,16 +311,16 @@ input[type="range"] {
     color: var(--text-main);
 }
 
-/* Status Indicators */
+/* Status Indicators - Margined Down to avoid simulator labels */
 .status-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 16px;
+    padding: 8px 18px;
     border-radius: 20px;
     font-size: 0.875rem;
     font-weight: 600;
-    margin-top: 15px;
+    margin-top: 25px;
 }
 
 .status-balanced {
@@ -402,7 +405,6 @@ input[type="range"] {
 }
 
 @media (max-width: 600px) {
-    /* Padding Reductions */
     .content-body {
         padding: 12px;
     }
@@ -415,7 +417,6 @@ input[type="range"] {
         padding: 12px;
     }
 
-    /* Font Size Reductions for Mobile */
     .header-title h1 {
         font-size: 1.05rem;
     }
@@ -449,8 +450,8 @@ input[type="range"] {
 
     .status-badge {
         font-size: 0.75rem;
-        padding: 4px 12px;
-        margin-top: 8px;
+        padding: 6px 14px;
+        margin-top: 18px;
     }
 
     .equation-box {
@@ -458,9 +459,8 @@ input[type="range"] {
         padding: 8px 10px;
     }
 
-    /* Canvas Size Optimization for Mobile */
     .canvas-card {
-        padding: 8px 4px;
+        padding: 12px 6px 18px 6px;
     }
 
     canvas {
