@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Lab: Get Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .pricing-card {
+            background: linear-gradient(135deg, #f8faf9 0%, var(--teal-subtle) 100%);
+            border: 2px solid var(--teal-dark);
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            max-width: 500px;
+            margin: 40px auto;
+            box-shadow: var(--shadow-md);
+        }
+        .limited-badge {
+            position: absolute;
+            top: -14px;
+            right: 24px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
+        }
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--teal-dark);
+            margin: 15px 0 5px 0;
+        }
+        .price-tag span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+        .feature-list {
+            list-style: none;
+            text-align: left;
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+        .feature-list li i {
+            color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <i class="fa-solid fa-flask-vial fa-lg"></i>
+                    <span>ScienceLab</span>
+                </div>
+                <button class="toggle-btn" onclick="toggleSidebar()" title="Close Sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+                <a href="premium.html" class="nav-item active" style="color: #d97706; font-weight: 600;"><i class="fa-solid fa-crown" style="color: #f59e0b;"></i><span>Get Premium</span><span class="menu-tag" style="background:#fef3c7; color:#d97706;">Rs.999</span></a>
+                <a href="rate.html" class="nav-item"><i class="fa-solid fa-star"></i><span>Rate Us</span></a>
+                <a href="contact.html" class="nav-item"><i class="fa-solid fa-headset"></i><span>Contact & FAQs</span></a>
+            </nav>
+        </aside>
+        <main class="main-wrapper" id="mainWrapper">
+            <header class="top-header">
+                <div class="header-left"><button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn"><i class="fa-solid fa-bars"></i></button></div>
+                <div class="header-title"><h1>Get Premium Lifetime Access</h1></div>
+                <div class="header-right"></div>
+            </header>
+            <div class="content-body">
+                <div class="container">
+                    <div class="pricing-card">
+                        <div class="limited-badge">Limited Time Offer</div>
+                        <h2 style="font-size: 1.5rem; color: var(--primary); margin-top: 10px;">ScienceLab Full Access Pass</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Unlock all 15+ advanced interactive physics lab modules forever.</p>
+                        <div class="price-tag">Rs. 999 <span>/ lifetime</span></div>
+                        <ul class="feature-list">
+                            <li><i class="fa-solid fa-circle-check"></i> Unlimited Access to All 15+ Practicals</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Advanced Zoom & Precision Lenses</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Automated Data Table Mean Calculations</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Ad-free Simulator Environment</li>
+                            <li><i class="fa-solid fa-circle-check"></i> Free Lifetime Updates & New Labs</li>
+                        </ul>
+                        <button class="btn" style="margin-top: 10px; font-size: 1rem; padding: 12px;" onclick="alert('Redirecting to secure checkout for Rs. 999 Lifetime Pass...')">
+                            <i class="fa-solid fa-lock"></i> Upgrade to Premium Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <footer class="footer">
+                <p>Sponsored & Designed by <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a></p>
+            </footer>
+        </main>
+    </div>
+    <script src="menu.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
