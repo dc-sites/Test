@@ -1,4 +1,3 @@
-name=index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +11,36 @@ name=index.html
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="style.css">
      <style>
+    /* Quick Stats Custom Responsive Layout (2x2 Mobile, 1x4 Desktop) with compact mobile sizes */
+    .quick-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+    }
+    @media (max-width: 768px) {
+        .quick-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .quick-stats-grid .card {
+            padding: 10px !important;
+            gap: 10px !important;
+            border-radius: 12px !important;
+        }
+        .quick-stats-grid .card > div:first-child {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 8px !important;
+            font-size: 0.95rem !important;
+        }
+        .quick-stats-grid h3 {
+            font-size: 0.95rem !important;
+        }
+        .quick-stats-grid p {
+            font-size: 0.7rem !important;
+        }
+    }
+
     /* Sponsored Tab Styling */
         .sponsored-grid {
             display: grid;
@@ -210,42 +239,42 @@ name=index.html
                         </div>
                     </div>
 
-                    <!-- Quick Stats Grid -->
+                    <!-- Quick Stats Grid (2x2 on Mobile, 1x4 on Desktop with compact mobile scale) -->
                     <div class="quick-stats-grid">
-                        <div class="card stat-card">
-                            <div class="stat-icon" style="background: var(--teal-subtle); color: var(--teal-dark);">
+                        <div class="card" style="display: flex; align-items: center; gap: 16px; padding: 16px;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--teal-subtle); color: var(--teal-dark); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-solid fa-flask"></i>
                             </div>
-                            <div class="stat-content">
-                                <h3>14+</h3>
-                                <p>Active Lab Sims</p>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">14+</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Active Lab Sims</p>
                             </div>
                         </div>
-                        <div class="card stat-card">
-                            <div class="stat-icon" style="background: #fef3c7; color: #d97706;">
+                        <div class="card" style="display: flex; align-items: center; gap: 16px; padding: 16px;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-solid fa-award"></i>
                             </div>
-                            <div class="stat-content">
-                                <h3>Interactive</h3>
-                                <p>Real-time Calculations</p>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">Interactive</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time Calculations</p>
                             </div>
                         </div>
-                        <div class="card stat-card">
-                            <div class="stat-icon" style="background: #e0f2fe; color: #0284c7;">
+                        <div class="card" style="display: flex; align-items: center; gap: 16px; padding: 16px;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-solid fa-user-graduate"></i>
                             </div>
-                            <div class="stat-content">
-                                <h3>A/L & O/L</h3>
-                                <p>Physics Syllabus Ready</p>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">A/L & O/L</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Physics Syllabus Ready</p>
                             </div>
                         </div>
-                        <div class="card stat-card">
-                            <div class="stat-icon" style="background: #f3e8ff; color: #9333ea;">
+                        <div class="card" style="display: flex; align-items: center; gap: 16px; padding: 16px;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: #f3e8ff; color: #9333ea; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-solid fa-chart-line"></i>
                             </div>
-                            <div class="stat-content">
-                                <h3>100%</h3>
-                                <p>Accurate Results</p>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">100%</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Accurate Results</p>
                             </div>
                         </div>
                     </div>
