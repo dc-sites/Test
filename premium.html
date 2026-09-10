@@ -1,3 +1,4 @@
+<!-- premium.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,17 +13,24 @@
             background: linear-gradient(135deg, #f8faf9 0%, var(--teal-subtle) 100%);
             border: 2px solid var(--teal-dark);
             border-radius: var(--radius);
-            padding: 30px;
+            padding: 24px 16px;
             text-align: center;
             position: relative;
+            width: 100%;
             max-width: 500px;
-            margin: 40px auto;
+            margin: 20px auto;
             box-shadow: var(--shadow-md);
+        }
+        @media (min-width: 768px) {
+            .pricing-card {
+                padding: 35px;
+                margin: 40px auto;
+            }
         }
         .limited-badge {
             position: absolute;
             top: -14px;
-            right: 24px;
+            right: 20px;
             background: #dc2626;
             color: #ffffff;
             font-size: 0.75rem;
@@ -34,13 +42,18 @@
             box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
         }
         .price-tag {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 800;
             color: var(--teal-dark);
             margin: 15px 0 5px 0;
         }
+        @media (min-width: 768px) {
+            .price-tag {
+                font-size: 2.5rem;
+            }
+        }
         .price-tag span {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 500;
             color: var(--text-muted);
         }
@@ -50,17 +63,30 @@
             margin: 20px 0;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
         .feature-list li {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-main);
+            line-height: 1.4;
+        }
+        @media (min-width: 768px) {
+            .feature-list li {
+                font-size: 0.95rem;
+                align-items: center;
+            }
         }
         .feature-list li i {
             color: #16a34a;
+            margin-top: 2px;
+        }
+        @media (min-width: 768px) {
+            .feature-list li i {
+                margin-top: 0;
+            }
         }
     </style>
 </head>
@@ -87,24 +113,24 @@
         <main class="main-wrapper" id="mainWrapper">
             <header class="top-header">
                 <div class="header-left"><button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn"><i class="fa-solid fa-bars"></i></button></div>
-                <div class="header-title"><h1>Get Premium Lifetime Access</h1></div>
+                <div class="header-title"><h1>Get Premium</h1></div>
                 <div class="header-right"></div>
             </header>
             <div class="content-body">
                 <div class="container">
                     <div class="pricing-card">
                         <div class="limited-badge">Limited Time Offer</div>
-                        <h2 style="font-size: 1.5rem; color: var(--primary); margin-top: 10px;">ScienceLab Full Access Pass</h2>
-                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 6px;">Unlock all 15+ advanced interactive physics lab modules forever.</p>
+                        <h2 style="font-size: 1.35rem; color: var(--primary); margin-top: 10px;">ScienceLab Full Access Pass</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px;">Unlock all 15+ advanced interactive physics lab modules forever.</p>
                         <div class="price-tag">Rs. 999 <span>/ lifetime</span></div>
                         <ul class="feature-list">
-                            <li><i class="fa-solid fa-circle-check"></i> Unlimited Access to All 15+ Practicals</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Advanced Zoom & Precision Lenses</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Automated Data Table Mean Calculations</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Ad-free Simulator Environment</li>
-                            <li><i class="fa-solid fa-circle-check"></i> Free Lifetime Updates & New Labs</li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span>Unlimited Access to All 15+ Practicals</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span>Advanced Zoom & Precision Lenses</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span>Automated Data Table Mean Calculations</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span>Ad-free Simulator Environment</span></li>
+                            <li><i class="fa-solid fa-circle-check"></i> <span>Free Lifetime Updates & New Labs</span></li>
                         </ul>
-                        <button class="btn" style="margin-top: 10px; font-size: 1rem; padding: 12px;" onclick="alert('Redirecting to secure checkout for Rs. 999 Lifetime Pass...')">
+                        <button class="btn" style="margin-top: 10px;" onclick="alert('Redirecting to secure checkout for Rs. 999 Lifetime Pass...')">
                             <i class="fa-solid fa-lock"></i> Upgrade to Premium Now
                         </button>
                     </div>
