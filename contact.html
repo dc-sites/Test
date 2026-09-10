@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Lab: Contact & Support</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Custom Contact & FAQ Page Styles */
+        .contact-hero {
+            background: linear-gradient(135deg, var(--teal-subtle) 0%, #ffffff 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        .contact-hero h2 {
+            font-size: 1.75rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .contact-hero p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        @media (max-width: 992px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .contact-card, .faq-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .contact-card:hover, .faq-card:hover {
+            border-color: var(--teal-dark);
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            background: var(--bg-card);
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-input:focus, .form-textarea:focus {
+            border-color: var(--teal-dark);
+            box-shadow: 0 0 0 3px var(--teal-subtle);
+        }
+        .form-textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--teal-dark);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .submit-btn:hover {
+            background: var(--primary);
+            transform: translateY(-1px);
+        }
+        /* Accordion FAQs */
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .faq-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 18px;
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: border-color 0.2s ease;
+        }
+        .faq-item:hover {
+            border-color: var(--teal-dark);
+        }
+        .faq-question {
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+        .faq-question i {
+            transition: transform 0.3s ease;
+            color: var(--teal-dark);
+        }
+        .faq-answer {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            line-height: 1.5;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+        .faq-item.open {
+            border-color: var(--teal-dark);
+            background: var(--teal-subtle);
+        }
+        .faq-item.open .faq-question i {
+            transform: rotate(180deg);
+        }
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Mobile Overlay -->
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <i class="fa-solid fa-flask-vial fa-lg"></i>
+                    <span>ScienceLab</span>
+                </div>
+                <button class="toggle-btn" onclick="toggleSidebar()" title="Close Sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="premium.html" class="nav-item" style="color: #d97706; font-weight: 600;">
+                    <i class="fa-solid fa-crown" style="color: #f59e0b;"></i>
+                    <span>Get Premium</span>
+                    <span class="menu-tag" style="background:#fef3c7; color:#d97706;">Rs.999</span>
+                </a>
+                <a href="rate.html" class="nav-item">
+                    <i class="fa-solid fa-star"></i>
+                    <span>Rate Us</span>
+                </a>
+                <a href="contact.html" class="nav-item active">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>Contact & FAQs</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-wrapper" id="mainWrapper">
+            <!-- Top Header Bar -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn" title="Toggle Sidebar">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+                <div class="header-title">
+                    <h1>Contact & Support FAQs</h1>
+                </div>
+                <div class="header-right"></div>
+            </header>
+
+            <!-- Main Interactive Content Area -->
+            <div class="content-body">
+                <div class="container">
+                    
+                    <!-- Contact Hero Banner -->
+                    <div class="contact-hero">
+                        <h2><i class="fa-solid fa-headset" style="color: var(--teal-dark);"></i> We Are Here to Help</h2>
+                        <p>Have questions about physics modules, technical issues, or the lifetime pass? Drop us a message below or check our frequent answers.</p>
+                    </div>
+
+                    <!-- Contact & FAQ Grid layout -->
+                    <div class="contact-grid">
+                        
+                        <!-- Get in Touch Form Card -->
+                        <div class="contact-card">
+                            <h2 class="card-title" style="margin-bottom: 20px;">
+                                <i class="fa-solid fa-envelope"></i> Send Us a Message
+                            </h2>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-user"></i> Your Full Name</label>
+                                <input type="text" class="form-input" id="contactName" placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-at"></i> Email Address</label>
+                                <input type="email" class="form-input" id="contactEmail" placeholder="student@university.com">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-comment-dots"></i> Message / Inquiry</label>
+                                <textarea class="form-textarea" id="contactMsg" placeholder="Describe your question or issue in detail..."></textarea>
+                            </div>
+                            <button class="submit-btn" onclick="submitContact()">
+                                <i class="fa-solid fa-paper-plane"></i> Send Support Request
+                            </button>
+                        </div>
+
+                        <!-- FAQs Accordion Card -->
+                        <div class="faq-card">
+                            <h2 class="card-title" style="margin-bottom: 20px;">
+                                <i class="fa-solid fa-circle-question"></i> Frequently Asked Questions
+                            </h2>
+                            <div class="faq-list">
+                                <div class="faq-item" onclick="toggleFaq(this)">
+                                    <div class="faq-question">
+                                        <span><i class="fa-solid fa-circle-dot" style="font-size: 0.5rem; color: var(--teal-dark); margin-right: 6px;"></i> Are all simulators completely free?</span>
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">Selected apparatus labs like Vernier Caliper, Travelling Microscope, and Hare's Apparatus are free. Full access to all 15+ modules requires the lifetime Premium Pass.</div>
+                                </div>
+                                <div class="faq-item" onclick="toggleFaq(this)">
+                                    <div class="faq-question">
+                                        <span><i class="fa-solid fa-circle-dot" style="font-size: 0.5rem; color: var(--teal-dark); margin-right: 6px;"></i> How does the Rs. 999 lifetime payment work?</span>
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">It is a single, one-time payment with no recurring subscription fees, giving you permanent access to all future lab updates and features.</div>
+                                </div>
+                                <div class="faq-item" onclick="toggleFaq(this)">
+                                    <div class="faq-question">
+                                        <span><i class="fa-solid fa-circle-dot" style="font-size: 0.5rem; color: var(--teal-dark); margin-right: 6px;"></i> Can I use these labs on mobile devices?</span>
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">Yes! All simulators are fully responsive and support touch-drag controls on smartphones, tablets, and desktop computers alike.</div>
+                                </div>
+                                <div class="faq-item" onclick="toggleFaq(this)">
+                                    <div class="faq-question">
+                                        <span><i class="fa-solid fa-circle-dot" style="font-size: 0.5rem; color: var(--teal-dark); margin-right: 6px;"></i> How do I report a technical bug?</span>
+                                        <i class="fa-solid fa-chevron-down"></i>
+                                    </div>
+                                    <div class="faq-answer">You can easily report bugs using the contact form on the left by entering your email and detailing the simulator module where you faced the issue.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <p>
+                    Sponsored & Designed by 
+                    <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a>
+                </p>
+            </footer>
+        </main>
+    </div>
+
+    <script src="menu.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function submitContact() {
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const msg = document.getElementById('contactMsg').value.trim();
+
+            if (!name || !email || !msg) {
+                alert('Please fill out all contact fields before submitting.');
+                return;
+            }
+
+            alert('Thank you, ' + name + '! Your message has been sent successfully to our support team.');
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactMsg').value = '';
+        }
+
+        function toggleFaq(element) {
+            // Optional: Close other open items for a cleaner accordion effect
+            const parentList = element.parentElement;
+            parentList.querySelectorAll('.faq-item').forEach(item => {
+                if (item !== element) {
+                    item.classList.remove('open');
+                }
+            });
+            element.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
