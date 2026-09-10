@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Lab: Rate Us</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .rating-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        .star-rating {
+            display: flex;
+            gap: 8px;
+            font-size: 2rem;
+            color: #cbd5e1;
+            cursor: pointer;
+        }
+        .star-rating .fa-star.selected,
+        .star-rating .fa-star:hover,
+        .star-rating .fa-star:hover ~ .fa-star {
+            color: #f59e0b;
+        }
+        .feedback-textarea {
+            width: 100%;
+            max-width: 600px;
+            height: 120px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            font-family: inherit;
+            background: var(--bg-card);
+            outline: none;
+        }
+        .feedback-textarea:focus {
+            border-color: var(--teal-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <i class="fa-solid fa-flask-vial fa-lg"></i>
+                    <span>ScienceLab</span>
+                </div>
+                <button class="toggle-btn" onclick="toggleSidebar()" title="Close Sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+                <a href="premium.html" class="nav-item" style="color: #d97706; font-weight: 600;"><i class="fa-solid fa-crown" style="color: #f59e0b;"></i><span>Get Premium</span><span class="menu-tag" style="background:#fef3c7; color:#d97706;">Rs.999</span></a>
+                <a href="rate.html" class="nav-item active"><i class="fa-solid fa-star"></i><span>Rate Us</span></a>
+                <a href="contact.html" class="nav-item"><i class="fa-solid fa-headset"></i><span>Contact & FAQs</span></a>
+            </nav>
+        </aside>
+        <main class="main-wrapper" id="mainWrapper">
+            <header class="top-header">
+                <div class="header-left"><button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn"><i class="fa-solid fa-bars"></i></button></div>
+                <div class="header-title"><h1>Rate Your Experience</h1></div>
+                <div class="header-right"></div>
+            </header>
+            <div class="content-body">
+                <div class="container">
+                    <div class="card" style="max-width: 700px; margin: 0 auto;">
+                        <h2 class="card-title"><i class="fa-solid fa-star"></i> Rate Your Learning Experience</h2>
+                        <div class="rating-container">
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">How would you rate your experience with ScienceLab physics simulators?</p>
+                            <div class="star-rating" id="starContainer">
+                                <i class="fa-solid fa-star" data-rating="1" onclick="setRating(1)"></i>
+                                <i class="fa-solid fa-star" data-rating="2" onclick="setRating(2)"></i>
+                                <i class="fa-solid fa-star" data-rating="3" onclick="setRating(3)"></i>
+                                <i class="fa-solid fa-star" data-rating="4" onclick="setRating(4)"></i>
+                                <i class="fa-solid fa-star" data-rating="5" onclick="setRating(5)"></i>
+                            </div>
+                            <p id="ratingFeedbackText" style="font-weight: 600; color: var(--teal-dark); min-height: 24px;">Tap a star to rate</p>
+                            <textarea class="feedback-textarea" id="feedbackInput" placeholder="Leave your feedback, suggestions, or lab feature requests here..."></textarea>
+                            <button class="btn" style="max-width: 250px;" onclick="submitFeedback()">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="footer">
+                <p>Sponsored & Designed by <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a></p>
+            </footer>
+        </main>
+    </div>
+    <script src="menu.js"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+        let currentRating = 0;
+        function setRating(stars) {
+            currentRating = stars;
+            const starElements = document.querySelectorAll('#starContainer .fa-star');
+            starElements.forEach((star, index) => {
+                if (index < stars) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+            const texts = ['', 'Poor 😞', 'Fair 😐', 'Good 🙂', 'Very Good 😃', 'Excellent! ⭐⭐⭐⭐⭐'];
+            document.getElementById('ratingFeedbackText').textContent = texts[stars];
+        }
+        function submitFeedback() {
+            if (currentRating === 0) {
+                alert('Please select star rating before submitting.');
+                return;
+            }
+            alert('Thank you! Your ' + currentRating + '-star rating and feedback have been submitted successfully.');
+            document.getElementById('feedbackInput').value = '';
+            setRating(0);
+            document.getElementById('ratingFeedbackText').textContent = 'Tap a star to rate';
+        }
+    </script>
+</body>
+</html>
