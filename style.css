@@ -585,3 +585,27 @@ input[type="number"]:focus, select:focus {
 .menu-scroll-btn:hover {
     background-color: var(--teal-light);
 }
+.nav-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menu-tag {
+    margin-left: auto;
+    background-color: var(--teal-light);
+    color: var(--teal-dark);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.nav-item.active .menu-tag,
+.nav-item:hover .menu-tag {
+    background-color: var(--teal-dark);
+    color: #ffffff;
+}
