@@ -609,3 +609,15 @@ input[type="number"]:focus, select:focus {
     background-color: #dc2626; /* Solid Red on Hover/Active */
     color: #ffffff;            /* White Text on Hover/Active */
 }
+/* Quick Stats Grid Layout */
+.quick-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Desktop: 1x4 layout */
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .quick-stats-grid {
+        grid-template-columns: repeat(2, 1fr); /* Mobile: 2x2 layout */
+    }
+}
