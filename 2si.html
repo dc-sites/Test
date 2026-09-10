@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>භෞතික විද්‍යාගාරය: බල සමාන්තරස්‍ර නීතිය</title>
+    <title>භෞතික විද්‍යා අත්හදා බැලීම: බල සමාන්තරාස්‍ර නියමය</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts - Sinhala Support (Noto Sans Sinhala) -->
+    <!-- Google Fonts & VCP / FM Abhaya style fonts for Notes.lk look -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap">
-    <!-- Shared External Stylesheet -->
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* Force Sinhala Font across all elements and override external CSS conflicts */
-        *, body, button, input, select, textarea, th, td, span, h1, h2, h3, h4, h5, h6, .card-title, .theory-text, label {
-            font-family: 'Noto Sans Sinhala', sans-serif !important;
+        /* vsinhala / notes.lk style font embedding simulation */
+        body {
+            font-family: 'Noto Sans Sinhala', 'FMAbhaya', 'VCP', sans-serif !important;
+            background-color: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
         }
     </style>
+    <!-- Shared External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -28,28 +32,28 @@
             <div class="sidebar-header">
                 <div class="logo-container">
                     <i class="fa-solid fa-flask-vial fa-lg"></i>
-                    <span>භෞතික විද්‍යාගාරය</span>
+                    <span>භෞතික විද්‍යා පර්යේෂණ</span>
                 </div>
-                <button class="toggle-btn" onclick="toggleSidebar()" title="මෙනුව වසන්න">
+                <button class="toggle-btn" onclick="toggleSidebar()" title="Sidebar වසන්න">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <nav class="sidebar-nav">
                 <a href="2.html" class="nav-item active">
                     <i class="fa-solid fa-diagram-project"></i>
-                    <span>බල අනුකරණය (Forces)</span>
+                    <span>බල סיмулятор (Simulator)</span>
                 </a>
                 <a href="3.html" class="nav-item">
                     <i class="fa-solid fa-scale-balanced"></i>
-                    <span>භ්‍රමණ අනුකරණය (Moments)</span>
+                    <span>ාර්‍ය ඝූර්ණ (Moments)</span>
                 </a>
                 <a href="#" class="nav-item">
                     <i class="fa-solid fa-book-open"></i>
-                    <span>න්‍යාය පත්‍රය (Lab Theory)</span>
+                    <span>විෂය න්‍යාය (Theory)</span>
                 </a>
                 <a href="#" class="nav-item">
                     <i class="fa-solid fa-chart-line"></i>
-                    <span>දත්ත වාර්තා (Data Reports)</span>
+                    <span>දත්ත වාර්තා (Reports)</span>
                 </a>
                 <a href="#" class="nav-item">
                     <i class="fa-solid fa-gear"></i>
@@ -63,12 +67,12 @@
             <!-- Top Header Bar -->
             <header class="top-header">
                 <div class="header-left">
-                    <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn" title="මෙනුව මාරු කරන්න">
+                    <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn" title="Toggle Sidebar">
                         <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
                 <div class="header-title">
-                    <h1>බල සමාන්තරස්‍ර නීතිය සත්‍යාපනය</h1>
+                    <h1>බල සමාන්තරාස්‍ර නියමය සත්‍යාපනය</h1>
                 </div>
                 <div class="header-right"></div>
             </header>
@@ -84,7 +88,7 @@
                             න්‍යාය සහ උපකරණ
                         </h2>
                         <p class="theory-text">
-                            බල සමාන්තරස්‍ර නීතිය සත්‍යාපනය කිරීම සඳහා ග්‍රේව్‌සන්ඩ් උපකරණ අනුකාරකය (Gravesand's Apparatus Simulator)[cite: 1].
+                            ග්‍රේව්ස්සන්ඩ් උපකරණය (Gravesand's Apparatus) භාවිතයෙන් බල සමාන්තරාස්‍ර නියමය සත්‍යාපනය කිරීමේ අත්හදා බැලීම.
                         </p>
                     </div>
 
@@ -105,24 +109,24 @@
 
                             <div class="control-group">
                                 <label>
-                                    බලය P (වම් බර)
-                                    <span class="value-tag"><span id="valP">120</span> ග්‍රෑම්</span>
+                                    බලය P (වම් භාරය)
+                                    <span class="value-tag"><span id="valP">120</span> g</span>
                                 </label>
                                 <input type="range" id="weightP" min="50" max="250" step="5" value="120">
                             </div>
 
                             <div class="control-group">
                                 <label>
-                                    බලය Q (දකුණු බර)
-                                    <span class="value-tag"><span id="valQ">150</span> ග්‍රෑම්</span>
+                                    බලය Q (දකුණු භාරය)
+                                    <span class="value-tag"><span id="valQ">150</span> g</span>
                                 </label>
                                 <input type="range" id="weightQ" min="50" max="250" step="5" value="150">
                             </div>
 
                             <div class="control-group">
                                 <label>
-                                    බලය R (මධ්‍යම බර)
-                                    <span class="value-tag"><span id="valR">200</span> ග්‍රෑම්</span>
+                                    බලය R (මධ්‍යම භාරය)
+                                    <span class="value-tag"><span id="valR">200</span> g</span>
                                 </label>
                                 <input type="range" id="weightR" min="50" max="300" step="5" value="200">
                             </div>
@@ -130,7 +134,7 @@
                             <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
                                 <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">
                                     <input type="checkbox" id="showParallelogram" checked style="accent-color: var(--teal-dark); width: 16px; height: 16px;">
-                                    සමාන්තරස්‍ර දෛශික පෙන්වන්න
+                                    සಮಾන්තරාස්‍ර දෛශික පෙන්වන්න
                                 </label>
 
                                 <label style="display: flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">
@@ -156,12 +160,12 @@
                                 <thead>
                                     <tr>
                                         <th>අංකය</th>
-                                        <th>P (ග්‍රෑම්)[cite: 1]</th>
-                                        <th>Q (ග්‍රෑම්)[cite: 1]</th>
-                                        <th>R (ග්‍රෑම්) [සතුලිත බර]</th>
+                                        <th>P (g)</th>
+                                        <th>Q (g)</th>
+                                        <th>R (g) [විෂමතාව/සමතුලිත]</th>
                                         <th>කෝණය θ</th>
                                         <th>ගණනය කළ R'</th>
-                                        <th>දෝෂය %[cite: 1]</th>
+                                        <th>දෝෂය (%)</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -175,8 +179,8 @@
             <!-- Footer -->
             <footer class="footer">
                 <p>
-                    නිර්මාණය කරන ලද්දේ 
-                    <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a>[cite: 1] විසිනි
+                    සැලසුම් කරන ලද්දේ 
+                    <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a>
                 </p>
             </footer>
         </div>
@@ -301,9 +305,9 @@
 
             if (!eq.valid) {
                 ctx.fillStyle = '#dc2626';
-                ctx.font = 'bold 14px "Noto Sans Sinhala", sans-serif';
+                ctx.font = 'bold 15px "Noto Sans Sinhala", sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('අසතුලිත පද්ධතියකි (ත්‍රිකෝණ අසමානතාවය තෘප්තිමත් නොවේ)', canvas.width / 2, 210);
+                ctx.fillText('පද්ධතිය සමතුලිත නැත (ත්‍රිකෝණ අසමානතාවය තෘප්තිමත් නොවේ)', canvas.width / 2, 210);
                 ctx.textAlign = 'left';
                 return;
             }
@@ -388,7 +392,7 @@
                 
                 const rCalc = Math.sqrt(P * P + Q * Q + 2 * P * Q * Math.cos(eq.thetaRad));
                 ctx.fillText(`ගණනය කළ R': ${rCalc.toFixed(1)} g`, paper.x + 15, paper.y + 45);
-                ctx.fillText(`සතුලිත බර R: ${R} g`, paper.x + 15, paper.y + 65);
+                ctx.fillText(`සමතුලිත R: ${R} g`, paper.x + 15, paper.y + 65);
             }
         }
 
@@ -442,7 +446,7 @@
             const eq = calculateEquilibrium(P, Q, R);
 
             if (!eq.valid) {
-                alert("වාර්තා කළ නොහැක: වත්මන් පද්ධතිය සතුලිත තත්වයක නැත!");
+                alert("සටහන් කරගත නොහැක: වත්මන් පද්ධතිය සමතුලිත තත්ත්වයේ නැත!");
                 return;
             }
 
