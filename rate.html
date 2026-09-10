@@ -1,3 +1,4 @@
+<!-- rate.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,15 +14,17 @@
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            padding: 20px;
+            padding: 10px 0;
             text-align: center;
+            width: 100%;
         }
         .star-rating {
             display: flex;
-            gap: 8px;
-            font-size: 2rem;
+            gap: 10px;
+            font-size: 2.2rem;
             color: #cbd5e1;
             cursor: pointer;
+            padding: 5px 0;
         }
         .star-rating .fa-star.selected,
         .star-rating .fa-star:hover,
@@ -30,13 +33,14 @@
         }
         .feedback-textarea {
             width: 100%;
-            max-width: 600px;
+            max-width: 100%;
             height: 120px;
             padding: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             resize: vertical;
             font-family: inherit;
+            font-size: 0.95rem;
             background: var(--bg-card);
             outline: none;
         }
@@ -68,7 +72,7 @@
         <main class="main-wrapper" id="mainWrapper">
             <header class="top-header">
                 <div class="header-left"><button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn"><i class="fa-solid fa-bars"></i></button></div>
-                <div class="header-title"><h1>Rate Your Experience</h1></div>
+                <div class="header-title"><h1>Rate Experience</h1></div>
                 <div class="header-right"></div>
             </header>
             <div class="content-body">
@@ -76,7 +80,7 @@
                     <div class="card" style="max-width: 700px; margin: 0 auto;">
                         <h2 class="card-title"><i class="fa-solid fa-star"></i> Rate Your Learning Experience</h2>
                         <div class="rating-container">
-                            <p style="color: var(--text-muted); font-size: 0.95rem;">How would you rate your experience with ScienceLab physics simulators?</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">How would you rate your experience with ScienceLab physics simulators?</p>
                             <div class="star-rating" id="starContainer">
                                 <i class="fa-solid fa-star" data-rating="1" onclick="setRating(1)"></i>
                                 <i class="fa-solid fa-star" data-rating="2" onclick="setRating(2)"></i>
@@ -84,9 +88,9 @@
                                 <i class="fa-solid fa-star" data-rating="4" onclick="setRating(4)"></i>
                                 <i class="fa-solid fa-star" data-rating="5" onclick="setRating(5)"></i>
                             </div>
-                            <p id="ratingFeedbackText" style="font-weight: 600; color: var(--teal-dark); min-height: 24px;">Tap a star to rate</p>
+                            <p id="ratingFeedbackText" style="font-weight: 600; color: var(--teal-dark); min-height: 24px; font-size: 0.95rem;">Tap a star to rate</p>
                             <textarea class="feedback-textarea" id="feedbackInput" placeholder="Leave your feedback, suggestions, or lab feature requests here..."></textarea>
-                            <button class="btn" style="max-width: 250px;" onclick="submitFeedback()">
+                            <button class="btn" style="width: 100%; max-width: none;" onclick="submitFeedback()">
                                 <i class="fa-solid fa-paper-plane"></i> Submit Feedback
                             </button>
                         </div>
