@@ -10,7 +10,77 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="style.css">
+     <style>
+    /* Sponsored Tab Styling */
+        .sponsored-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .sponsor-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-start;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .sponsor-card:hover {
+            border-color: var(--teal-dark);
+            transform: translateY(-2px);
+        }
+        .sponsor-card h4 {
+            font-size: 1.1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sponsor-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+        .sponsor-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .btn-learny {
+            background-color: #f3e8ff;
+            color: #9333ea;
+            border: 1px solid #d8b4fe;
+        }
+        .btn-learny:hover {
+            background-color: #e9d5ff;
+        }
+        .btn-science {
+            background-color: #e0f2fe;
+            color: #0284c7;
+            border: 1px solid #bae6fd;
+        }
+        .btn-science:hover {
+            background-color: #bae6fd;
+        }
+        @media (max-width: 768px) {
+            .dashboard-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
+   
 <body>
 
     <div class="app-layout">
