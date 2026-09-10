@@ -594,8 +594,8 @@ input[type="number"]:focus, select:focus {
 
 .menu-tag {
     margin-left: auto;
-    background-color: var(--teal-light);
-    color: var(--teal-dark);
+    background-color: #fee2e2; /* Light Red Background */
+    color: #dc2626;          /* Red Text */
     font-size: 0.7rem;
     font-weight: 700;
     padding: 2px 6px;
@@ -606,6 +606,6 @@ input[type="number"]:focus, select:focus {
 
 .nav-item.active .menu-tag,
 .nav-item:hover .menu-tag {
-    background-color: var(--teal-dark);
-    color: #ffffff;
+    background-color: #dc2626; /* Solid Red on Hover/Active */
+    color: #ffffff;            /* White Text on Hover/Active */
 }
