@@ -3,186 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Physics Lab: Student Dashboard</title>
+    <title>ScienceLab: Physics Virtual Laboratory Dashboard</title>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Dashboard Custom Enhancements */
-        .dashboard-banner {
-            background: linear-gradient(135deg, var(--teal-subtle) 0%, #ffffff 100%);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-        .banner-content h2 {
-            font-size: 1.5rem;
-            color: var(--primary);
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .banner-content p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-        .greeting-icon {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            border-radius: 50%;
-            background: var(--bg-main);
-            padding: 4px;
-            border: 1px solid var(--border-color);
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        .stat-card {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: var(--shadow-sm);
-        }
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 10px;
-            background: var(--teal-subtle);
-            color: var(--teal-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-        .stat-info h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .stat-info p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        .quick-launch-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 16px;
-            margin-top: 12px;
-        }
-        .quick-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 16px;
-            text-decoration: none;
-            color: var(--text-main);
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .quick-card:hover {
-            border-color: var(--teal-dark);
-            background: var(--teal-subtle);
-            transform: translateY(-2px);
-        }
-        .quick-card h4 {
-            font-size: 1rem;
-            color: var(--teal-dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .quick-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-        /* Sponsored Tab Styling */
-        .sponsored-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-            margin-top: 12px;
-        }
-        .sponsor-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: flex-start;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-        .sponsor-card:hover {
-            border-color: var(--teal-dark);
-            transform: translateY(-2px);
-        }
-        .sponsor-card h4 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .sponsor-card p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-        .sponsor-btn {
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-top: 4px;
-        }
-        .btn-learny {
-            background-color: #f3e8ff;
-            color: #9333ea;
-            border: 1px solid #d8b4fe;
-        }
-        .btn-learny:hover {
-            background-color: #e9d5ff;
-        }
-        .btn-science {
-            background-color: #e0f2fe;
-            color: #0284c7;
-            border: 1px solid #bae6fd;
-        }
-        .btn-science:hover {
-            background-color: #bae6fd;
-        }
-        @media (max-width: 768px) {
-            .dashboard-banner {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-    </style>
 </head>
 <body>
 
@@ -205,10 +32,6 @@
                 <a href="index.html" class="nav-item active">
                     <i class="fa-solid fa-house"></i>
                     <span>Dashboard</span>
-                </a>
-                <a href="18.html" class="nav-item">
-                    <i class="fa-solid fa-ruler-combined"></i>
-                    <span>Vernier Caliper</span>
                 </a>
                 <a href="12.html" class="nav-item">
                     <i class="fa-solid fa-microscope"></i>
@@ -269,6 +92,19 @@
                     <i class="fa-solid fa-temperature-high"></i>
                     <span>Gas Law Simulator</span>
                 </a>
+                <a href="premium.html" class="nav-item" style="color: #d97706; font-weight: 600;">
+                    <i class="fa-solid fa-crown" style="color: #f59e0b;"></i>
+                    <span>Get Premium</span>
+                    <span class="menu-tag" style="background:#fef3c7; color:#d97706;">Rs.999</span>
+                </a>
+                <a href="rate.html" class="nav-item">
+                    <i class="fa-solid fa-star"></i>
+                    <span>Rate Us</span>
+                </a>
+                <a href="contact.html" class="nav-item">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>Contact & FAQs</span>
+                </a>
             </nav>
         </aside>
 
@@ -291,100 +127,81 @@
             <main class="content-body">
                 <div class="container">
                     
-                    <!-- Greeting Banner -->
-                    <div class="dashboard-banner">
-                        <div class="banner-content">
-                            <h2 id="greetingHeading">
-                                <span id="timeGreeting">Welcome</span>, Student!
-                            </h2>
-                            <p>Access your interactive physics simulators, track your practical progress, and review data sets seamlessly.</p>
+                    <!-- Greeting Banner Card with Custom Icon -->
+                    <div class="card greeting-card" style="display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, #f0f7f5 0%, #BDDED6 100%); border: 1px solid var(--teal-light);">
+                        <div>
+                            <span id="time-badge" style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--teal-dark); background: #ffffff; padding: 4px 10px; border-radius: 20px; display: inline-block; margin-bottom: 8px;">Loading...</span>
+                            <h2 id="greeting-text" style="font-size: 1.6rem; color: var(--primary); font-weight: 700; margin-bottom: 4px;">Welcome back, Student!</h2>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">Ready to explore physics virtual simulations and run your experiments today?</p>
                         </div>
-                        <img src="https://i.postimg.cc/Vk9Ct5Yh/AIRetouch-20260910-133025804.png" alt="Student Avatar" class="greeting-icon">
+                        <div class="greeting-icon-container" style="display: flex; align-items: center; justify-content: center; padding: 10px;">
+                            <img src="https://i.postimg.cc/Vk9Ct5Yh/AIRetouch-20260910-133025804.png" alt="Student Greeting Icon" style="width: 85px; height: 85px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));">
+                        </div>
                     </div>
 
                     <!-- Quick Stats Grid -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fa-solid fa-flask"></i></div>
-                            <div class="stat-info">
-                                <h3>15+</h3>
-                                <p>Active Simulators</p>
+                    <div class="controls-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                        <div class="card" style="display: flex; align-items: center; gap: 16px; padding: 16px;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: var(--teal-subtle); color: var(--teal-dark); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">14+</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Active Lab Sims</p>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
-                            <div class="stat-info">
-                                <h3>4 Free</h3>
-                                <p>Unlocked Modules</p>
+                        <div class="card" style="display: flex; align-items: center; gap: 16px; padding: 16px;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">Interactive</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Real-time Calculations</p>
                             </div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon"><i class="fa-solid fa-book-bookmark"></i></div>
-                            <div class="stat-info">
-                                <h3 id="currentDateText">Active</h3>
-                                <p>Physics Session</p>
+                        <div class="card" style="display: flex; align-items: center; gap: 16px; padding: 16px;">
+                            <div style="width: 50px; height: 50px; border-radius: 12px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                                <i class="fa-solid fa-user-graduate"></i>
+                            </div>
+                            <div>
+                                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">A/L & O/L</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Physics Syllabus Ready</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Quick Launch Section -->
+                    <!-- Quick Lab Access Section -->
                     <div class="card">
                         <h2 class="card-title">
-                            <i class="fa-solid fa-bolt"></i>
-                            Quick Launch Simulators
+                            <i class="fa-solid fa-rocket"></i>
+                            Featured Physics Simulators
                         </h2>
-                        <div class="quick-launch-grid">
-                            <a href="18.html" class="quick-card">
-                                <h4><i class="fa-solid fa-ruler-combined"></i> Vernier Caliper</h4>
-                                <p>Measure internal/external diameters with zoom lens accuracy.</p>
+                        <div class="controls-grid" style="margin-top: 15px;">
+                            <a href="10.html" class="card" style="text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 12px rgba(23,125,129,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                                    <i class="fa-solid fa-microscope" style="font-size: 1.2rem; color: var(--teal-dark);"></i>
+                                    <h3 style="font-size: 1rem; font-weight: 600; color: var(--primary);">Micrometer Screw Gauge</h3>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Practice measuring small dimensions like wire thickness and steel ball diameters precisely.</p>
                             </a>
-                            <a href="10.html" class="quick-card">
-                                <h4><i class="fa-solid fa-microscope"></i> Micrometer Gauge</h4>
-                                <p>Practice precision measurements with thimble and spindle controls.</p>
-                            </a>
-                            <a href="7.html" class="quick-card">
-                                <h4><i class="fa-solid fa-stopwatch"></i> Simple Pendulum</h4>
-                                <p>Explore oscillations, gravity effect, and time periods.</p>
-                            </a>
-                            <a href="8.html" class="quick-card">
-                                <h4><i class="fa-solid fa-wave-square"></i> Helical Spring</h4>
-                                <p>Examine spring constants and hooke's law dynamically.</p>
+                            <a href="7.html" class="card" style="text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s; display: block;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 12px rgba(23,125,129,0.15)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)';">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                                    <i class="fa-solid fa-stopwatch" style="font-size: 1.2rem; color: var(--teal-dark);"></i>
+                                    <h3 style="font-size: 1rem; font-weight: 600; color: var(--primary);">Simple Pendulum</h3>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Investigate the relationship between pendulum length and time period to calculate acceleration due to gravity.</p>
                             </a>
                         </div>
                     </div>
 
-                    <!-- Sponsored Tab Section -->
-                    <div class="card">
-                        <h2 class="card-title">
-                            <i class="fa-solid fa-handshake"></i>
-                            Sponsored Partners & Platforms
-                        </h2>
-                        <div class="sponsored-grid">
-                            <div class="sponsor-card">
-                                <h4><i class="fa-solid fa-graduation-cap" style="color: #9333ea;"></i> Learny App</h4>
-                                <p>Your ultimate companion for smart studying, conceptual learning resources, and academic tools.</p>
-                                <a href="https://www.learny.study" target="_blank" rel="noopener noreferrer" class="sponsor-btn btn-learny">
-                                    Visit Learny App <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                </a>
-                            </div>
-                            <div class="sponsor-card">
-                                <h4><i class="fa-solid fa-atom" style="color: #0284c7;"></i> Science Picco</h4>
-                                <p>Explore fascinating scientific updates, experimental insights, and physics discussions via Telegram.</p>
-                                <a href="https://t.me/sciencepicco" target="_blank" rel="noopener noreferrer" class="sponsor-btn btn-science">
-                                    Join Science Picco <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Notice / Announcements Card -->
+                    <!-- Announcements / Study Tips Card -->
                     <div class="card">
                         <h2 class="card-title">
                             <i class="fa-solid fa-bullhorn"></i>
-                            Announcements & Guidelines
+                            Student Study Notice
                         </h2>
                         <div class="equation-box">
-                            <strong>Tip for Online Physics Practicals:</strong> Make sure to record multiple sets of data readings to calculate accurate mean values. Utilize the zoom and calibration tools inside each simulator module for precise analysis.
+                            <strong>Tip for Practical Exams:</strong> Always take a minimum of three independent sets of readings (e.g., at different positions along a wire) and calculate the mean to eliminate zero errors and parallax observation mistakes.
                         </div>
                     </div>
 
@@ -399,14 +216,13 @@
                     <a href="https://t.me/sciencepicco" target="_blank" rel="noopener noreferrer" class="footer-custom-link footer-science">Science Picco</a>
                 </div>
                 <p>
-                    Sponsored & Designed by 
+                    Designed by 
                     <a href="https://hexasolutions.online" target="_blank" rel="noopener noreferrer" class="footer-link">Hexa Solutions</a>
                 </p>
             </footer>
         </div>
     </div>
 
-    <script src="menu.js"></script>
     <script>
         // Sidebar Toggle Logic
         function toggleSidebar() {
@@ -423,25 +239,29 @@
             }
         }
 
-        // Dynamic Greeting based on Local Time
+        // Dynamic Time-based Greeting Logic
         function updateGreeting() {
             const now = new Date();
             const hours = now.getHours();
-            let greetingText = "Welcome";
+            const greetingText = document.getElementById('greeting-text');
+            const timeBadge = document.getElementById('time-badge');
+
+            let timeOfDay = "";
+            let badgeText = "";
 
             if (hours < 12) {
-                greetingText = "Good Morning";
+                timeOfDay = "Good Morning";
+                badgeText = "🌅 Morning Session";
             } else if (hours < 17) {
-                greetingText = "Good Afternoon";
+                timeOfDay = "Good Afternoon";
+                badgeText = "☀️ Afternoon Study";
             } else {
-                greetingText = "Good Evening";
+                timeOfDay = "Good Evening";
+                badgeText = "🌙 Evening Revision";
             }
 
-            document.getElementById('timeGreeting').textContent = greetingText;
-            
-            // Format current date badge
-            const options = { month: 'short', day: 'numeric' };
-            document.getElementById('currentDateText').textContent = now.toLocaleDateString(undefined, options);
+            greetingText.innerHTML = `${timeOfDay}, Student!`;
+            timeBadge.innerHTML = badgeText;
         }
 
         updateGreeting();
