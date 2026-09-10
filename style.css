@@ -523,3 +523,65 @@ input[type="number"]:focus, select:focus {
         display: block;
     }
 }
+/* Footer Custom Links */
+.footer-links-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 6px;
+}
+
+.footer-custom-link {
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.footer-custom-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.footer-learny {
+    color: #c084fc; /* Light Purple */
+}
+
+.footer-science {
+    color: #38bdf8; /* Light Blue */
+}
+
+/* Sidebar Menu Scroll Buttons */
+.sidebar-nav {
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.menu-scroll-btn {
+    display: none;
+    width: 100%;
+    background-color: var(--teal-subtle);
+    border: 1px solid var(--teal-light);
+    color: var(--teal-dark);
+    padding: 6px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    transition: background-color 0.2s;
+    z-index: 5;
+}
+
+.scroll-up-btn {
+    border-top: none;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.scroll-down-btn {
+    border-bottom: none;
+    border-top: 1px solid var(--border-color);
+}
+
+.menu-scroll-btn:hover {
+    background-color: var(--teal-light);
+}
