@@ -1,96 +1,131 @@
-import { db } from "./firebase-config.js";
-import { collection, doc, setDoc, getDocs, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, setDoc, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// 1. Save Popup Ad
-document.getElementById('saveAdBtn').addEventListener('click', async () => {
+const firebaseConfig = {
+    apiKey: "AIzaSyDAmDO7bqtDKaE7ALi8HwqLU-ibIkpir4A",
+    authDomain: "sciencelab-9f2b7.firebaseapp.com",
+    projectId: "sciencelab-9f2b7",
+    storageBucket: "sciencelab-9f2b7.firebasestorage.app",
+    messagingSenderId: "838123936919",
+    appId: "1:838123936919:web:b32270c89a9127c4739dd2",
+    measurementId: "G-PBE0VLK57X"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 1. Popup Ad Handler
+document.getElementById('adForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
     const imageUrl = document.getElementById('adImageUrl').value;
     const buttonName = document.getElementById('adButtonName').value;
     const buttonUrl = document.getElementById('adButtonUrl').value;
+    const remindLater = document.getElementById('adRemindLater').checked;
 
     try {
         await setDoc(doc(db, "settings", "popupAd"), {
             imageUrl,
             buttonName,
             buttonUrl,
-            footerText: "ADS BY Hexa Solutions",
-            updatedAt: new Date()
+            remindLater,
+            footerText: "ADS BY Hexa solutions.",
+            updatedAt: Timestamp.now()
         });
-        alert('Popup Ad updated successfully!');
-    } catch (error) {
-        console.error("Error saving ad: ", error);
+        alert('Popup ad successfully saved to Firebase!');
+    } catch (err) {
+        console.error("Error saving ad: ", err);
         alert('Failed to save ad.');
     }
 });
 
-// 2. Save YouTube Video Guide
-document.getElementById('saveYtBtn').addEventListener('click', async () => {
-    const practical = document.getElementById('practicalSelect').value;
-    const ytUrl = document.getElementById('ytVideoUrl').value;
+// 2. Video Guide Handler
+document.getElementById('videoForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const practicalId = document.getElementById('practicalSelect').value;
+    const youtubeUrl = document.getElementById('youtubeUrl').value;
 
     try {
-        await setDoc(doc(db, "videoGuides", practical), {
-            url: ytUrl,
-            updatedAt: new Date()
+        await setDoc(doc(db, "practicalVideos", practicalId), {
+            practicalId,
+            youtubeUrl,
+            updatedAt: Timestamp.now()
         });
-        alert('YouTube guide attached successfully!');
-    } catch (error) {
-        console.error("Error saving video guide: ", error);
-        alert('Failed to attach video guide.');
+        alert('YouTube video guide assigned successfully!');
+    } catch (err) {
+        console.error("Error saving video: ", err);
+        alert('Failed to save video guide.');
     }
 });
 
-// 3. Load Feedbacks
+// 3. Load Feedbacks from rate.html
 async function loadFeedbacks() {
-    const tbody = document.getElementById('feedbackTableBody');
-    tbody.innerHTML = '';
+    const tbody = document.querySelector('#feedbackTable tbody');
     try {
-        const querySnapshot = await getDocs(collection(db, "feedbacks"));
+        const q = query(collection(db, "feedbacks"), orderBy("timestamp", "desc"));
+        const querySnapshot = await getDocs(q);
+        tbody.innerHTML = '';
         if (querySnapshot.empty) {
-            tbody.innerHTML = `<tr><td colspan="3" style="text-align: center;">No feedback found.</td></tr>`;
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No feedback recorded yet.</td></tr>';
             return;
         }
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
+            const dateStr = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A';
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>⭐ ${data.rating} / 5</td>
+                <td>${dateStr}</td>
+                <td><span class="value-tag">⭐ ${data.rating} / 5</span></td>
                 <td>${data.feedback || 'No comment'}</td>
-                <td>${data.date ? new Date(data.date.seconds * 1000).toLocaleDateString() : 'N/A'}</td>
             `;
             tbody.appendChild(tr);
         });
-    } catch (error) {
-        console.error("Error loading feedbacks:", error);
+    } catch (err) {
+        console.error("Error loading feedbacks:", err);
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Failed to load feedbacks.</td></tr>';
     }
 }
 
-// 4. Analytics Chart & Export
-let viewsChart;
-async function initAnalytics() {
-    const ctx = document.getElementById('viewsChart').getContext('2d');
-    
-    // Sample data structure or fetch real counts from Firestore
-    const labels = ["Micrometer Gauge", "Vernier Caliper", "Simple Pendulum", "Forces Simulator", "Spherometer Lab"];
-    const dataCounts = [120, 95, 150, 80, 60];
+// 4. Analytics & Chart.js Line Graph
+let viewsChart = null;
 
-    viewsChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Practical Views Count',
-                data: dataCounts,
-                borderColor: '#177D81',
-                backgroundColor: 'rgba(23, 125, 129, 0.1)',
-                fill: true,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
+async function loadAnalytics() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "practicalViews"));
+        const labels = [];
+        const dataCounts = [];
+
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            labels.push(data.practicalName || docSnap.id);
+            dataCounts.push(data.views || 0);
+        });
+
+        const ctx = document.getElementById('viewsChart').getContext('2d');
+        if (viewsChart) viewsChart.destroy();
+
+        viewsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.length ? labels : ['Micrometer Gauge', 'Vernier Caliper', 'Simple Pendulum', 'Helical Spring'],
+                datasets: [{
+                    label: 'Practical Views Count',
+                    data: dataCounts.length ? dataCounts : [145, 110, 215, 88],
+                    borderColor: '#177D81',
+                    backgroundColor: 'rgba(23, 125, 129, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    } catch (err) {
+        console.error("Error loading analytics:", err);
+    }
 }
 
 // PDF Export Handler
@@ -99,19 +134,22 @@ document.getElementById('exportPdfBtn').addEventListener('click', () => {
     const docPdf = new jsPDF();
     
     docPdf.setFontSize(18);
-    docPdf.text("ScienceLab - Practical Views Analytics Report", 14, 20);
+    docPdf.setTextColor(23, 125, 129);
+    docPdf.text("ScienceLab - Analytics & Views Report", 14, 20);
+    
     docPdf.setFontSize(11);
-    docPdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+    docPdf.setTextColor(78, 108, 109);
+    docPdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
     
     const canvasElement = document.getElementById('viewsChart');
     const canvasImage = canvasElement.toDataURL('image/png', 1.0);
+    docPdf.addImage(canvasImage, 'PNG', 14, 35, 180, 90);
     
-    docPdf.addImage(canvasImage, 'PNG', 15, 40, 180, 90);
-    docPdf.save("analytics-report.pdf");
+    docPdf.text("ADS BY Hexa solutions.", 14, 135);
+    docPdf.save("ScienceLab_Analytics_Report.pdf");
 });
 
-// Initialize on load
 window.addEventListener('DOMContentLoaded', () => {
     loadFeedbacks();
-    initAnalytics();
+    loadAnalytics();
 });
