@@ -353,6 +353,64 @@
             </footer>
         </div>
     </div>
+    <!-- Popup Ad HTML Structure to put before </body> on client pages -->
+<div class="popup-overlay" id="globalPopupModal">
+    <div class="popup-box">
+        <button onclick="closePopupAd()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:1.2rem; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+        <img id="popupImg" src="" alt="Advertisement">
+        <h3 id="popupTitle" style="margin-bottom: 10px; color: var(--primary);">Special Announcement</h3>
+        <a id="popupBtn" href="#" target="_blank" class="btn" style="margin-bottom: 10px;">Button</a>
+        <button onclick="remindLater()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; text-decoration:underline;">Remind Me Later</button>
+        <div class="popup-footer-branding" id="popupBranding">ADS BY Hexa Solutions</div>
+    </div>
+</div>
+
+<script type="module">
+    import { db } from "./firebase-config.js";
+    import { doc, getDoc, addDoc, collection, increment, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 1. Popup Ad Display Logic
+    async function checkAndShowAd() {
+        const dismissedTime = localStorage.getItem('ad_dismissed_time');
+        if (dismissedTime && Date.now() - dismissedTime < 3600000) return; // 1 hour reminder block
+
+        try {
+            const adSnap = await getDoc(doc(db, "settings", "popupAd"));
+            if (adSnap.exists()) {
+                const data = adSnap.data();
+                document.getElementById('popupImg').src = data.imageUrl;
+                document.getElementById('popupBtn').textContent = data.buttonName;
+                document.getElementById('popupBtn').href = data.buttonUrl;
+                document.getElementById('popupBranding').textContent = data.footerText || "ADS BY Hexa Solutions";
+                document.getElementById('globalPopupModal').style.display = 'flex';
+            }
+        } catch (e) { console.error(e); }
+    }
+    window.closePopupAd = () => document.getElementById('globalPopupModal').style.display = 'none';
+    window.remindLater = () => {
+        localStorage.setItem('ad_dismissed_time', Date.now());
+        window.closePopupAd();
+    };
+    window.addEventListener('DOMContentLoaded', checkAndShowAd);
+
+    // 2. Increment Practical View Counter
+    async function trackView() {
+        const path = window.location.pathname.split("/").pop();
+        if (path && path.includes('.html') && path !== 'index.html' && path !== 'admin.html') {
+            try {
+                // Track page view in Firestore collection "practical_views"
+                const viewRef = doc(db, "practical_views", path);
+                const snap = await getDoc(viewRef);
+                if (snap.exists()) {
+                    await updateDoc(viewRef, { count: increment(1) });
+                } else {
+                    await setDoc(viewRef, { count: 1, name: document.title });
+                }
+            } catch (e) { console.error(e); }
+        }
+    }
+    trackView();
+</script>
 <div id="authModal" style="display:none; position:fixed; inset:0; background:rgba(15,39,40,0.85); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center; padding:20px; font-family:'Inter',sans-serif;">
     
   
