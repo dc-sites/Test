@@ -257,49 +257,40 @@
         });
     </script>
     <script type="module">
-    import { db } from "./firebase-config.js";
-    import { collection, addDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Star Rating Logic
-    const stars = document.querySelectorAll('#starRating i');
-    let selectedRating = 0;
+const firebaseConfig = {
+    apiKey: "AIzaSyDAmDO7bqtDKaE7ALi8HwqLU-ibIkpir4A",
+    authDomain: "sciencelab-9f2b7.firebaseapp.com",
+    projectId: "sciencelab-9f2b7",
+    storageBucket: "sciencelab-9f2b7.firebasestorage.app",
+    messagingSenderId: "838123936919",
+    appId: "1:838123936919:web:b32270c89a9127c4739dd2",
+    measurementId: "G-PBE0VLK57X"
+};
 
-    stars.forEach(star => {
-        star.addEventListener('click', () => {
-            selectedRating = parseInt(star.getAttribute('data-value'));
-            stars.forEach((s, idx) => {
-                if (idx < selectedRating) {
-                    s.classList.add('active');
-                } else {
-                    s.classList.remove('active');
-                }
-            });
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+document.getElementById('submitFeedback').addEventListener('click', async () => {
+    if (selectedRating === 0) {
+        alert('Please select a star rating before submitting.');
+        return;
+    }
+    const feedbackMsg = document.getElementById('feedbackText').value;
+    try {
+        await addDoc(collection(db, "feedbacks"), {
+            rating: selectedRating,
+            feedback: feedbackMsg,
+            timestamp: Timestamp.now()
         });
-    });
-
-    document.getElementById('submitFeedback').addEventListener('click', async () => {
-        if (selectedRating === 0) {
-            alert('Please select a star rating before submitting.');
-            return;
-        }
-        const feedbackText = document.getElementById('feedbackText').value;
-
-        try {
-            await addDoc(collection(db, "feedbacks"), {
-                rating: selectedRating,
-                feedback: feedbackText,
-                date: new Date()
-            });
-            document.getElementById('successMsg').style.display = 'block';
-            document.getElementById('feedbackText').value = '';
-            setTimeout(() => {
-                stars.forEach(s => s.classList.remove('active'));
-                selectedRating = 0;
-            }, 1500);
-        } catch (e) {
-            alert('Error submitting feedback. Try again.');
-        }
-    });
+        document.getElementById('successMsg').style.display = 'block';
+        document.getElementById('feedbackText').value = '';
+    } catch(err) {
+        console.error("Error writing feedback: ", err);
+    }
+});
 </script>
 </body>
 </html>
