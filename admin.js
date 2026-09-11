@@ -1,155 +1,177 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, getDocs, addClause } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// TODO: Replace with your Firebase project config credentials
 const firebaseConfig = {
-    apiKey: "AIzaSyDAmDO7bqtDKaE7ALi8HwqLU-ibIkpir4A",
-    authDomain: "sciencelab-9f2b7.firebaseapp.com",
-    projectId: "sciencelab-9f2b7",
-    storageBucket: "sciencelab-9f2b7.firebasestorage.app",
-    messagingSenderId: "838123936919",
-    appId: "1:838123936919:web:b32270c89a9127c4739dd2",
-    measurementId: "G-PBE0VLK57X"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 1. Popup Ad Handler
-document.getElementById('adForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const imageUrl = document.getElementById('adImageUrl').value;
-    const buttonName = document.getElementById('adButtonName').value;
-    const buttonUrl = document.getElementById('adButtonUrl').value;
-    const remindLater = document.getElementById('adRemindLater').checked;
+let viewsChart = null;
 
-    try {
-        await setDoc(doc(db, "settings", "popupAd"), {
-            imageUrl,
-            buttonName,
-            buttonUrl,
-            remindLater,
-            footerText: "ADS BY Hexa solutions.",
-            updatedAt: Timestamp.now()
-        });
-        alert('Popup ad successfully saved to Firebase!');
-    } catch (err) {
-        console.error("Error saving ad: ", err);
-        alert('Failed to save ad.');
+// Handle Login State Check
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        document.getElementById('adminLoginModal').style.display = 'none';
+        initAdminDashboard();
+    } else {
+        document.getElementById('adminLoginModal').style.display = 'flex';
     }
 });
 
-// 2. Video Guide Handler
-document.getElementById('videoForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const practicalId = document.getElementById('practicalSelect').value;
-    const youtubeUrl = document.getElementById('youtubeUrl').value;
-
+document.getElementById('loginBtn').addEventListener('click', async () => {
+    const email = document.getElementById('adminEmail').value;
+    const pass = document.getElementById('adminPassword').value;
+    const errEl = document.getElementById('loginError');
     try {
-        await setDoc(doc(db, "practicalVideos", practicalId), {
-            practicalId,
-            youtubeUrl,
-            updatedAt: Timestamp.now()
-        });
-        alert('YouTube video guide assigned successfully!');
-    } catch (err) {
-        console.error("Error saving video: ", err);
-        alert('Failed to save video guide.');
+        await signInWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+        errEl.style.display = 'block';
+        errEl.innerText = error.message;
     }
 });
 
-// 3. Load Feedbacks from rate.html
-async function loadFeedbacks() {
-    const tbody = document.querySelector('#feedbackTable tbody');
+window.switchTab = function(tabId, el) {
+    document.querySelectorAll('.admin-section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.sidebar-nav .nav-item').forEach(item => item.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    el.classList.add('active');
+    
+    const titles = { ads: 'Popup Ads Manager', analytics: 'Practical Views & PDF', feedbacks: 'Student Feedbacks', videos: 'YouTube Guides' };
+    document.getElementById('pageHeaderTitle').innerText = titles[tabId];
+    if(tabId === 'analytics') loadAnalyticsData();
+    if(tabId === 'feedbacks') loadFeedbacksData();
+};
+
+function initAdminDashboard() {
+    loadAdConfig();
+}
+
+// Save Popup Ad Config
+document.getElementById('saveAdConfigBtn').addEventListener('click', async () => {
+    const adData = {
+        imageUrl: document.getElementById('adImageUrl').value,
+        btnName: document.getElementById('adBtnName').value,
+        btnUrl: document.getElementById('adBtnUrl').value,
+        remindOption: document.getElementById('adRemindOption').value,
+        footerText: "ADS BY Hexa solutions."
+    };
+    await setDoc(doc(db, "settings", "popupAd"), adData);
+    alert('Popup ad settings published successfully!');
+});
+
+async function loadAdConfig() {
+    const snap = await getDoc(doc(db, "settings", "popupAd"));
+    if (snap.exists()) {
+        const d = snap.data();
+        document.getElementById('adImageUrl').value = d.imageUrl || '';
+        document.getElementById('adBtnName').value = d.btnName || '';
+        document.getElementById('adBtnUrl').value = d.btnUrl || '';
+        document.getElementById('adRemindOption').value = d.remindOption || 'enabled';
+    }
+}
+
+// Load Feedbacks from Firestore (populated by rate.html)
+async function loadFeedbacksData() {
+    const tbody = document.getElementById('feedbackTableBody');
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Loading feedbacks...</td></tr>';
+    
     try {
-        const q = query(collection(db, "feedbacks"), orderBy("timestamp", "desc"));
-        const querySnapshot = await getDocs(q);
+        const querySnapshot = await getDocs(collection(db, "feedbacks"));
         tbody.innerHTML = '';
-        if (querySnapshot.empty) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No feedback recorded yet.</td></tr>';
+        if(querySnapshot.empty) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">No feedbacks found yet.</td></tr>';
             return;
         }
         querySnapshot.forEach((docSnap) => {
             const data = docSnap.data();
-            const dateStr = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'N/A';
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${dateStr}</td>
-                <td><span class="value-tag">⭐ ${data.rating} / 5</span></td>
-                <td>${data.feedback || 'No comment'}</td>
+                <td>${data.date || 'N/A'}</td>
+                <td><i class="fa-solid fa-star" style="color:var(--accent-yellow);"></i> ${data.rating} / 5</td>
+                <td>${data.feedback || ''}</td>
             `;
             tbody.appendChild(tr);
         });
-    } catch (err) {
-        console.error("Error loading feedbacks:", err);
+    } catch(e) {
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:red;">Failed to load feedbacks.</td></tr>';
     }
 }
 
-// 4. Analytics & Chart.js Line Graph
-let viewsChart = null;
+// Load Practical Views & Line Graph
+async function loadAnalyticsData() {
+    // Mock sample analytics dataset or fetch from Firestore collection 'practical_views'
+    const practicalNames = ['Micrometer Gauge', 'Vernier Caliper', 'Travelling Microscope', 'Simple Pendulum', 'Helical Spring'];
+    const viewCounts = [1420, 1150, 980, 1840, 1320]; // Replace with dynamic DB queries if available
 
-async function loadAnalytics() {
-    try {
-        const querySnapshot = await getDocs(collection(db, "practicalViews"));
-        const labels = [];
-        const dataCounts = [];
+    const ctx = document.getElementById('viewsLineGraph').getContext('2d');
+    if(viewsChart) viewsChart.destroy();
 
-        querySnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            labels.push(data.practicalName || docSnap.id);
-            dataCounts.push(data.views || 0);
-        });
-
-        const ctx = document.getElementById('viewsChart').getContext('2d');
-        if (viewsChart) viewsChart.destroy();
-
-        viewsChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels.length ? labels : ['Micrometer Gauge', 'Vernier Caliper', 'Simple Pendulum', 'Helical Spring'],
-                datasets: [{
-                    label: 'Practical Views Count',
-                    data: dataCounts.length ? dataCounts : [145, 110, 215, 88],
-                    borderColor: '#177D81',
-                    backgroundColor: 'rgba(23, 125, 129, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true } }
-            }
-        });
-    } catch (err) {
-        console.error("Error loading analytics:", err);
-    }
+    viewsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: practicalNames,
+            datasets: [{
+                label: 'Total Views',
+                data: viewCounts,
+                borderColor: '#177D81',
+                backgroundColor: 'rgba(23, 125, 129, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 }
 
-// PDF Export Handler
+// Export PDF Report handler
 document.getElementById('exportPdfBtn').addEventListener('click', () => {
     const { jsPDF } = window.jspdf;
     const docPdf = new jsPDF();
     
     docPdf.setFontSize(18);
     docPdf.setTextColor(23, 125, 129);
-    docPdf.text("ScienceLab - Analytics & Views Report", 14, 20);
+    docPdf.text("ScienceLab Practical Analytics Report", 14, 20);
     
-    docPdf.setFontSize(11);
+    docPdf.setFontSize(10);
     docPdf.setTextColor(78, 108, 109);
-    docPdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 28);
-    
-    const canvasElement = document.getElementById('viewsChart');
-    const canvasImage = canvasElement.toDataURL('image/png', 1.0);
-    docPdf.addImage(canvasImage, 'PNG', 14, 35, 180, 90);
-    
-    docPdf.text("ADS BY Hexa solutions.", 14, 135);
+    docPdf.text(`Generated Date: ${new Date().toLocaleDateString()} | ADS BY Hexa solutions.`, 14, 28);
+
+    docPdf.autoTable({
+        startY: 35,
+        head: [['Practical Simulator', 'Total Views', 'Status']],
+        body: [
+            ['Micrometer Screw Gauge', '1,420', 'Active'],
+            ['Vernier Caliper', '1,150', 'Active'],
+            ['Travelling Microscope', '980', 'Active'],
+            ['Simple Pendulum', '1,840', 'Active'],
+            ['Helical Spring', '1,320', 'Active']
+        ],
+        theme: 'grid',
+        headStyles: { fillColor: [23, 125, 129] }
+    });
+
     docPdf.save("ScienceLab_Analytics_Report.pdf");
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-    loadFeedbacks();
-    loadAnalytics();
+// Save YouTube Guide mapping
+document.getElementById('saveVideoGuideBtn').addEventListener('click', async () => {
+    const practical = document.getElementById('practicalSelect').value;
+    const ytLink = document.getElementById('ytVideoLink').value;
+    
+    await setDoc(doc(db, "video_guides", practical), { link: ytLink, updatedAt: new Date().toISOString() });
+    alert('YouTube video guide assigned successfully!');
 });
