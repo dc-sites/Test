@@ -7,103 +7,141 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="style.css">
-    <!-- Chart.js for Line Graph -->
+    <!-- Chart.js & jsPDF CDNs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- jsPDF for PDF Export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div class="app-layout">
-        <div class="main-wrapper" style="margin-left: 0;">
-            <header class="top-header">
-                <div class="header-title">
-                    <h1>Admin Control Panel</h1>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <i class="fa-solid fa-shield-halved fa-lg"></i>
+                    <span>Admin Panel</span>
                 </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#adsSection" class="nav-item active"><i class="fa-solid fa-rectangle-ad"></i><span>Popup Ads</span></a>
+                <a href="#analyticsSection" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Views & Analytics</span></a>
+                <a href="#feedbackSection" class="nav-item"><i class="fa-solid fa-comments"></i><span>Feedbacks</span></a>
+                <a href="#videosSection" class="nav-item"><i class="fa-solid fa-video"></i><span>Video Guides</span></a>
+                <a href="index.html" class="nav-item"><i class="fa-solid fa-arrow-left"></i><span>Back to App</span></a>
+            </nav>
+        </aside>
+
+        <div class="main-wrapper" id="mainWrapper">
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn"><i class="fa-solid fa-bars"></i></button>
+                </div>
+                <div class="header-title"><h1>Admin Control Center</h1></div>
+                <div class="header-right"></div>
             </header>
+
             <main class="content-body">
                 <div class="container">
-                    
-                    <!-- Popup Ads Management Card -->
-                    <div class="card">
-                        <h2 class="card-title"><i class="fa-solid fa-rectangle-ad"></i> Manage Popup Advertisement</h2>
-                        <div class="control-group">
-                            <label>Ad Image URL</label>
-                            <input type="text" id="adImageUrl" placeholder="https://example.com/image.png">
-                        </div>
-                        <div class="control-group">
-                            <label>Button Name</label>
-                            <input type="text" id="adButtonName" placeholder="Upgrade Now">
-                        </div>
-                        <div class="control-group">
-                            <label>Button URL</label>
-                            <input type="text" id="adButtonUrl" placeholder="https://example.com/target">
-                        </div>
-                        <button class="btn" id="saveAdBtn"><i class="fa-solid fa-save"></i> Save & Publish Ad</button>
+                    <!-- Popup Ads Configuration Card -->
+                    <div class="card" id="adsSection">
+                        <h2 class="card-title"><i class="fa-solid fa-rectangle-ad"></i> Configure Popup Ad</h2>
+                        <form id="adForm">
+                            <div class="control-group">
+                                <label>Ad Image URL</label>
+                                <input type="url" id="adImageUrl" placeholder="https://example.com/image.jpg" required>
+                            </div>
+                            <div class="control-group">
+                                <label>Button Name</label>
+                                <input type="text" id="adButtonName" placeholder="e.g. Get Premium Now" required>
+                            </div>
+                            <div class="control-group">
+                                <label>Button URL</label>
+                                <input type="url" id="adButtonUrl" placeholder="https://example.com" required>
+                            </div>
+                            <div class="control-group" style="display:flex; align-items:center; gap:10px;">
+                                <input type="checkbox" id="adRemindLater" style="width:auto;">
+                                <label for="adRemindLater" style="margin-bottom:0;">Enable "Remind Me Later" Option</label>
+                            </div>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:10px;">Footer branding: <strong>ADS BY Hexa solutions.</strong></p>
+                            <button type="submit" class="btn" style="margin-top:15px;"><i class="fa-solid fa-floppy-disk"></i> Save & Publish Ad</button>
+                        </form>
                     </div>
 
-                    <!-- YouTube Guides Management Card -->
-                    <div class="card">
-                        <h2 class="card-title"><i class="fa-brands fa-youtube"></i> Add YouTube Video Guide to Practical</h2>
-                        <div class="control-group">
-                            <label>Select Practical</label>
-                            <select id="practicalSelect">
-                                <option value="10.html">Micrometer Screw Gauge</option>
-                                <option value="18.html">Vernier Caliper</option>
-                                <option value="7.html">Simple Pendulum</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label>YouTube Video Embed / Watch Link</label>
-                            <input type="text" id="ytVideoUrl" placeholder="https://www.youtube.com/watch?v=...">
-                        </div>
-                        <button class="btn" id="saveYtBtn"><i class="fa-solid fa-plus"></i> Attach Video Guide</button>
-                    </div>
-
-                    <!-- Analytics & Views Card -->
-                    <div class="card">
-                        <h2 class="card-title"><i class="fa-solid fa-chart-line"></i> Practical Views Analytics</h2>
-                        <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-                            <div>
+                    <!-- Practical Views & Line Graph Analytics Card -->
+                    <div class="card" id="analyticsSection">
+                        <h2 class="card-title"><i class="fa-solid fa-chart-line"></i> Practical Views & Analytics</h2>
+                        <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
+                            <div class="control-group" style="flex:1; min-width:200px;">
                                 <label>Start Date</label>
                                 <input type="date" id="startDateFilter">
                             </div>
-                            <div>
+                            <div class="control-group" style="flex:1; min-width:200px;">
                                 <label>End Date</label>
                                 <input type="date" id="endDateFilter">
                             </div>
-                            <div style="align-self: flex-end;">
-                                <button class="btn" id="filterBtn" style="padding: 12px 20px;"><i class="fa-solid fa-filter"></i> Filter</button>
-                                <button class="btn btn-secondary" id="exportPdfBtn" style="padding: 12px 20px;"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+                            <div style="display:flex; align-items:flex-end; gap:10px;">
+                                <button type="button" class="btn" id="filterBtn"><i class="fa-solid fa-filter"></i> Filter</button>
+                                <button type="button" class="btn btn-secondary" id="exportPdfBtn"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
                             </div>
                         </div>
-                        <div style="position: relative; height:300px; width:100%">
+                        <div style="position: relative; height:350px; width:100%;">
                             <canvas id="viewsChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Feedbacks Display Card -->
-                    <div class="card">
+                    <!-- Feedbacks Section Card -->
+                    <div class="card" id="feedbackSection">
                         <h2 class="card-title"><i class="fa-solid fa-comments"></i> User Feedbacks (from rate.html)</h2>
                         <div class="table-responsive">
                             <table class="data-table" id="feedbackTable">
                                 <thead>
                                     <tr>
+                                        <th>Date</th>
                                         <th>Rating</th>
                                         <th>Feedback Message</th>
-                                        <th>Date</th>
                                     </tr>
                                 </thead>
-                                <tbody id="feedbackTableBody">
-                                    <tr><td colspan="3" style="text-align: center;">Loading feedbacks...</td></tr>
+                                <tbody>
+                                    <tr><td colspan="3" style="text-align:center;">Loading feedbacks...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
+                    <!-- YouTube Video Guides Manager Card -->
+                    <div class="card" id="videosSection">
+                        <h2 class="card-title"><i class="fa-solid fa-video"></i> Manage Practical YouTube Video Guides</h2>
+                        <form id="videoForm">
+                            <div class="control-group">
+                                <label>Select Practical</label>
+                                <select id="practicalSelect" required>
+                                    <option value="10">Micrometer Screw Gauge (10.html)</option>
+                                    <option value="18">Vernier Caliper (18.html)</option>
+                                    <option value="12">Travelling Microscope (12.html)</option>
+                                    <option value="7">Simple Pendulum (7.html)</option>
+                                    <option value="8">Helical Spring (8.html)</option>
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label>YouTube Video Link / Embed URL</label>
+                                <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+                            </div>
+                            <button type="submit" class="btn" style="margin-top:15px;"><i class="fa-solid fa-plus"></i> Save Video Guide</button>
+                        </form>
+                    </div>
                 </div>
             </main>
+
+            <footer class="footer">
+                <p>Designed by <a href="https://hexasolutions.online" target="_blank" class="footer-link">Hexa Solutions</a></p>
+            </footer>
         </div>
     </div>
     <script type="module" src="admin.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainWrapper = document.getElementById('mainWrapper');
+            sidebar.classList.toggle('mobile-open');
+        }
+    </script>
 </body>
 </html>
