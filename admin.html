@@ -3,130 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScienceLab: Admin Dashboard</title>
+    <title>ScienceLab: Admin Control Panel</title>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="style.css">
-    <!-- Chart.js & jsPDF CDNs -->
+    <!-- Chart.js & jsPDF -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-section { display: none; }
+        .admin-section.active { display: block; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    </style>
 </head>
 <body>
+
+    <!-- Login Overlay Screen -->
+    <div id="adminLoginModal" style="position:fixed; inset:0; background:rgba(15,39,40,0.9); z-index:9999; display:flex; align-items:center; justify-content:center; padding:20px;">
+        <div class="card" style="max-width:400px; width:100%; text-align:center;">
+            <div style="width:50px; height:50px; background:var(--teal-subtle); color:var(--teal-dark); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto; font-size:1.2rem;">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="card-title" style="justify-content:center; border:none;">Admin Authentication</h3>
+            <div class="control-group" style="text-align:left; margin-bottom:15px;">
+                <label>Admin Email</label>
+                <input type="email" id="adminEmail" placeholder="admin@hexasolutions.online">
+            </div>
+            <div class="control-group" style="text-align:left; margin-bottom:20px;">
+                <label>Password</label>
+                <input type="password" id="adminPassword" placeholder="••••••••">
+            </div>
+            <button class="btn" id="loginBtn"><i class="fa-solid fa-right-to-bracket"></i> Login Dashboard</button>
+            <p id="loginError" style="color:#dc2626; font-size:0.85rem; margin-top:10px; display:none;"></p>
+        </div>
+    </div>
+
     <div class="app-layout">
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
-                    <i class="fa-solid fa-shield-halved fa-lg"></i>
+                    <i class="fa-solid fa-gauge-high fa-lg"></i>
                     <span>Admin Panel</span>
                 </div>
             </div>
             <nav class="sidebar-nav">
-                <a href="#adsSection" class="nav-item active"><i class="fa-solid fa-rectangle-ad"></i><span>Popup Ads</span></a>
-                <a href="#analyticsSection" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Views & Analytics</span></a>
-                <a href="#feedbackSection" class="nav-item"><i class="fa-solid fa-comments"></i><span>Feedbacks</span></a>
-                <a href="#videosSection" class="nav-item"><i class="fa-solid fa-video"></i><span>Video Guides</span></a>
-                <a href="index.html" class="nav-item"><i class="fa-solid fa-arrow-left"></i><span>Back to App</span></a>
+                <a href="#" class="nav-item active" onclick="switchTab('ads', this)">
+                    <i class="fa-solid fa-rectangle-ad"></i><span>Popup Ads Manager</span>
+                </a>
+                <a href="#" class="nav-item" onclick="switchTab('analytics', this)">
+                    <i class="fa-solid fa-chart-line"></i><span>Practical Views & PDF</span>
+                </a>
+                <a href="#" class="nav-item" onclick="switchTab('feedbacks', this)">
+                    <i class="fa-solid fa-comments"></i><span>Student Feedbacks</span>
+                </a>
+                <a href="#" class="nav-item" onclick="switchTab('videos', this)">
+                    <i class="fa-brands fa-youtube"></i><span>YouTube Guides</span>
+                </a>
+                <a href="index.html" class="nav-item" style="margin-top:auto; color:#dc2626;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Exit to Site</span>
+                </a>
             </nav>
         </aside>
 
+        <!-- Main Wrapper -->
         <div class="main-wrapper" id="mainWrapper">
             <header class="top-header">
-                <div class="header-left">
-                    <button class="toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn"><i class="fa-solid fa-bars"></i></button>
-                </div>
-                <div class="header-title"><h1>Admin Control Center</h1></div>
+                <div class="header-left"><button class="toggle-btn" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button></div>
+                <div class="header-title"><h1 id="pageHeaderTitle">Popup Ads Manager</h1></div>
                 <div class="header-right"></div>
             </header>
 
             <main class="content-body">
                 <div class="container">
-                    <!-- Popup Ads Configuration Card -->
-                    <div class="card" id="adsSection">
-                        <h2 class="card-title"><i class="fa-solid fa-rectangle-ad"></i> Configure Popup Ad</h2>
-                        <form id="adForm">
-                            <div class="control-group">
-                                <label>Ad Image URL</label>
-                                <input type="url" id="adImageUrl" placeholder="https://example.com/image.jpg" required>
+                    
+                    <!-- TAB 1: POPUP ADS MANAGER -->
+                    <div id="tab-ads" class="admin-section active">
+                        <div class="card">
+                            <h2 class="card-title"><i class="fa-solid fa-rectangle-ad"></i> Configure Custom Popup Ad</h2>
+                            <div class="admin-grid">
+                                <div class="control-group">
+                                    <label>Ad Image URL</label>
+                                    <input type="text" id="adImageUrl" placeholder="https://example.com/banner.png">
+                                </div>
+                                <div class="control-group">
+                                    <label>Button Name</label>
+                                    <input type="text" id="adBtnName" placeholder="Get Offer Now">
+                                </div>
+                                <div class="control-group">
+                                    <label>Button Target URL</label>
+                                    <input type="text" id="adBtnUrl" placeholder="https://hexasolutions.online">
+                                </div>
+                                <div class="control-group">
+                                    <label>Remind Me Later Option</label>
+                                    <select id="adRemindOption">
+                                        <option value="enabled">Enabled</option>
+                                        <option value="disabled">Disabled</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="control-group">
-                                <label>Button Name</label>
-                                <input type="text" id="adButtonName" placeholder="e.g. Get Premium Now" required>
-                            </div>
-                            <div class="control-group">
-                                <label>Button URL</label>
-                                <input type="url" id="adButtonUrl" placeholder="https://example.com" required>
-                            </div>
-                            <div class="control-group" style="display:flex; align-items:center; gap:10px;">
-                                <input type="checkbox" id="adRemindLater" style="width:auto;">
-                                <label for="adRemindLater" style="margin-bottom:0;">Enable "Remind Me Later" Option</label>
-                            </div>
-                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:10px;">Footer branding: <strong>ADS BY Hexa solutions.</strong></p>
-                            <button type="submit" class="btn" style="margin-top:15px;"><i class="fa-solid fa-floppy-disk"></i> Save & Publish Ad</button>
-                        </form>
-                    </div>
-
-                    <!-- Practical Views & Line Graph Analytics Card -->
-                    <div class="card" id="analyticsSection">
-                        <h2 class="card-title"><i class="fa-solid fa-chart-line"></i> Practical Views & Analytics</h2>
-                        <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
-                            <div class="control-group" style="flex:1; min-width:200px;">
-                                <label>Start Date</label>
-                                <input type="date" id="startDateFilter">
-                            </div>
-                            <div class="control-group" style="flex:1; min-width:200px;">
-                                <label>End Date</label>
-                                <input type="date" id="endDateFilter">
-                            </div>
-                            <div style="display:flex; align-items:flex-end; gap:10px;">
-                                <button type="button" class="btn" id="filterBtn"><i class="fa-solid fa-filter"></i> Filter</button>
-                                <button type="button" class="btn btn-secondary" id="exportPdfBtn"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
-                            </div>
-                        </div>
-                        <div style="position: relative; height:350px; width:100%;">
-                            <canvas id="viewsChart"></canvas>
+                            <button class="btn" id="saveAdConfigBtn" style="margin-top:20px;"><i class="fa-solid fa-floppy-disk"></i> Publish Ad Settings</button>
                         </div>
                     </div>
 
-                    <!-- Feedbacks Section Card -->
-                    <div class="card" id="feedbackSection">
-                        <h2 class="card-title"><i class="fa-solid fa-comments"></i> User Feedbacks (from rate.html)</h2>
-                        <div class="table-responsive">
-                            <table class="data-table" id="feedbackTable">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Rating</th>
-                                        <th>Feedback Message</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td colspan="3" style="text-align:center;">Loading feedbacks...</td></tr>
-                                </tbody>
-                            </table>
+                    <!-- TAB 2: ANALYTICS & GRAPH -->
+                    <div id="tab-analytics" class="admin-section">
+                        <div class="card">
+                            <h2 class="card-title"><i class="fa-solid fa-chart-line"></i> Practical View Counts & Analytics</h2>
+                            <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:20px; align-items:flex-end;">
+                                <div class="control-group" style="flex:1; margin:0;">
+                                    <label>Start Date</label>
+                                    <input type="date" id="filterStartDate">
+                                </div>
+                                <div class="control-group" style="flex:1; margin:0;">
+                                    <label>End Date</label>
+                                    <input type="date" id="filterEndDate">
+                                </div>
+                                <button class="btn" id="applyFilterBtn" style="width:auto;"><i class="fa-solid fa-filter"></i> Filter Range</button>
+                                <button class="btn btn-secondary" id="exportPdfBtn" style="width:auto;"><i class="fa-solid fa-file-pdf"></i> Export PDF Report</button>
+                            </div>
+                            <div style="position: relative; height:350px; width:100%;">
+                                <canvas id="viewsLineGraph"></canvas>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- YouTube Video Guides Manager Card -->
-                    <div class="card" id="videosSection">
-                        <h2 class="card-title"><i class="fa-solid fa-video"></i> Manage Practical YouTube Video Guides</h2>
-                        <form id="videoForm">
-                            <div class="control-group">
-                                <label>Select Practical</label>
-                                <select id="practicalSelect" required>
-                                    <option value="10">Micrometer Screw Gauge (10.html)</option>
-                                    <option value="18">Vernier Caliper (18.html)</option>
-                                    <option value="12">Travelling Microscope (12.html)</option>
-                                    <option value="7">Simple Pendulum (7.html)</option>
-                                    <option value="8">Helical Spring (8.html)</option>
-                                </select>
+                    <!-- TAB 3: STUDENT FEEDBACKS -->
+                    <div id="tab-feedbacks" class="admin-section">
+                        <div class="card">
+                            <h2 class="card-title"><i class="fa-solid fa-comments"></i> Student Feedback from rate.html</h2>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Rating</th>
+                                            <th>Feedback Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="feedbackTableBody">
+                                        <!-- Dynamically populated -->
+                                    </tbody>
+                                </table>
                             </div>
-                            <div class="control-group">
-                                <label>YouTube Video Link / Embed URL</label>
-                                <input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=..." required>
-                            </div>
-                            <button type="submit" class="btn" style="margin-top:15px;"><i class="fa-solid fa-plus"></i> Save Video Guide</button>
-                        </form>
+                        </div>
                     </div>
+
+                    <!-- TAB 4: YOUTUBE VIDEO GUIDES -->
+                    <div id="tab-videos" class="admin-section">
+                        <div class="card">
+                            <h2 class="card-title"><i class="fa-brands fa-youtube" style="color:#dc2626;"></i> Assign YouTube Video Guides to Practicals</h2>
+                            <div class="admin-grid">
+                                <div class="control-group">
+                                    <label>Select Practical</label>
+                                    <select id="practicalSelect">
+                                        <option value="10.html">Micrometer Screw Gauge</option>
+                                        <option value="18.html">Vernier Caliper</option>
+                                        <option value="12.html">Travelling Microscope</option>
+                                        <option value="7.html">Simple Pendulum</option>
+                                        <option value="8.html">Helical Spring</option>
+                                    </select>
+                                </div>
+                                <div class="control-group">
+                                    <label>YouTube Video Link / ID</label>
+                                    <input type="text" id="ytVideoLink" placeholder="https://www.youtube.com/watch?v=XYZ123 or ID">
+                                </div>
+                            </div>
+                            <button class="btn" id="saveVideoGuideBtn" style="margin-top:20px;"><i class="fa-solid fa-plus"></i> Save Video Guide</button>
+                        </div>
+                    </div>
+
                 </div>
             </main>
 
@@ -135,13 +185,7 @@
             </footer>
         </div>
     </div>
+
     <script type="module" src="admin.js"></script>
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const mainWrapper = document.getElementById('mainWrapper');
-            sidebar.classList.toggle('mobile-open');
-        }
-    </script>
 </body>
 </html>
